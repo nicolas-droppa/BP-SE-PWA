@@ -1,3 +1,11 @@
+document.addEventListener("DOMContentLoaded", function () {
+    if (cv.getBuildInformation) {
+        onOpenCvReady();
+    } else {
+        cv.onRuntimeInitialized = onOpenCvReady;
+    }
+});
+
 // Function to be called when OpenCV is loaded
 function onOpenCvReady() {
     console.log("✅ OpenCV.js is fully loaded and initialized!");
