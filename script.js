@@ -1,73 +1,54 @@
-let openCvReady = false;
-
-// This function will be called when OpenCV.js finishes loading
+// Function to be called when OpenCV is loaded
 function onOpenCvReady() {
     console.log("✅ OpenCV.js is fully loaded and initialized!");
-    openCvReady = true;
-
-    // Check if 'cv.imread' is available
-    if (cv.imread) {
-        console.log("✅ cv.imread is available!");
-    } else {
-        console.error("❌ cv.imread is not available!");
-    }
+    document.getElementById('status').textContent = "OpenCV.js is ready!";
 }
 
-// Check if OpenCV is ready and start processing the image
-document.getElementById('fileInput').addEventListener('change', (event) => {
-    // Wait until OpenCV is fully initialized before processing the image
-    if (!openCvReady) {
-        console.log("⏳ Waiting for OpenCV to finish initializing...");
+// Function to process the uploaded image
+function onFileUpload(event) {
+    const file = event.target.files[0]; // Get the uploaded file
+    if (!file) {
+        console.error("❌ No file selected");
         return;
     }
 
-    let file = event.target.files[0];
-    if (!file) return;
-
-    let img = new Image();
-    img.onload = () => processImage(img);
-    img.src = URL.createObjectURL(file);
-});
-
-function processImage(img) {
-    // Ensure OpenCV is initialized before processing the image
-    if (!openCvReady) {
-        console.error("❌ OpenCV.js is not initialized yet!");
-        return;
-    }
-
-    // Log cv object to check availability of methods like 'imread'
-    console.log("OpenCV object:", cv);
-
-    // Check if cv.imread is available
-    if (typeof cv.imread !== 'function') {
-        console.error("❌ cv.imread is not available. Something went wrong with OpenCV.js.");
-        return;
-    }
-
-    let originalCanvas = document.getElementById('originalCanvas');
-    let processedCanvas = document.getElementById('processedCanvas');
-    let ctx = originalCanvas.getContext('2d');
+    // Create an image element to load the file into
+    const imgElement = new Image();
+    const reader = new FileReader();
     
-    // Draw image on the canvas
-    originalCanvas.width = img.width;
-    originalCanvas.height = img.height;
-    ctx.drawImage(img, 0, 0, img.width, img.height);
+    // Once the file is read, set it as the source of the image element
+    reader.onload = function(e) {
+        imgElement.src = e.target.result;
+    };
 
-    // Ensure that OpenCV.js can access the canvas
-    let src = cv.imread(originalCanvas);  // Corrected: use cv.imread for canvas
-    let dst = new cv.Mat();
+    reader.readAsDataURL(file); // Read the file as a data URL
 
-    // Convert the image to grayscale
-    cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+    // When the image is loaded, process it using OpenCV.js
+    imgElement.onload = function() {
+        // Create a Mat object from the image
+        let mat = cv.imread(imgElement); // Read image into Mat
+        console.log("Image Matrix:", mat);
 
-    // Apply a binary threshold
-    cv.threshold(src, dst, 127, 255, cv.THRESH_BINARY);
+        // Optional: Convert the image to grayscale
+        cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY);
+        console.log("Converted to Grayscale:", mat);
 
-    // Show the processed image on the second canvas
-    cv.imshow('processedCanvas', dst);
-
-    // Clean up memory
-    src.delete();
-    dst.delete();
+        // Display the image on the canvas
+        cv.imshow('canvas', mat);
+        mat.delete(); // Clean up memory after use
+    };
 }
+
+// Check if OpenCV is loaded
+function checkOpenCv() {
+    if (typeof cv !== 'undefined' && cv.onRuntimeInitialized) {
+        console.log("✅ OpenCV.js script found!");
+        cv.onRuntimeInitialized = onOpenCvReady;  // Assign function after initialization
+    } else {
+        console.error("❌ OpenCV.js is not loaded. Please check your network connection or CDN link.");
+        document.getElementById('status').textContent = "Failed to load OpenCV.js!";
+    }
+}
+
+// Call the function to check OpenCV
+checkOpenCv();
