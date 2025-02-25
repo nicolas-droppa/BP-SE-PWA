@@ -3,7 +3,7 @@
  * True -> debug functions will execude
  * False -> debug function are skipped
  */
-export const DEV_MODE = true;
+export const DEV_MODE = false;
 
 /** LOWER THRESHOLD VALUE
  * value reprezenting lower threshold for detecting paper color
@@ -19,3 +19,8 @@ export const HIGHER_THRESHOLD_VALUE = [155, 255, 255, 255]; //[35, 100, 255, 255
  * arrays used for coloring some debug prints
  */
 export const COLOR_RED = [255, 0, 0, 255];
+
+/** TARGET MARGIN
+ * value that is added in target roi, for extra safe meassures in case of wrong detection
+ */
+export const TARGET_MARGIN_ROI_PIXELS = 100;

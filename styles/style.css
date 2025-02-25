@@ -1,6 +1,7 @@
 #canvas,
 #grayCanvas,
 #hsvCanvas,
-#maskCanvas {
+#maskCanvas,
+#targetRoiCanvas {
     width: 500px;
 }
