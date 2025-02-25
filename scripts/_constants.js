@@ -1,3 +1,10 @@
+/** DEV MODE (DEBUG)
+ * value based on which are debug functions fired
+ * True -> debug functions will execude
+ * False -> debug function are skipped
+ */
+export const DEV_MODE = true;
+
 /** LOWER THRESHOLD VALUE
  * value reprezenting lower threshold for detecting paper color
  */
@@ -7,3 +14,8 @@ export const LOWER_THRESHOLD_VALUE = [0, 0, 0, 0]; //[20, 20, 150, 0] | [0, 0, 0
  * value reprezenting higher threshold for detecting paper color
  */
 export const HIGHER_THRESHOLD_VALUE = [150, 150, 150, 255]; //[35, 100, 255, 255] | [150, 150, 150, 255]
+
+/** COLORS
+ * arrays used for coloring some debug prints
+ */
+export const COLOR_RED = [255, 0, 0];
