@@ -1,4 +1,5 @@
-import { COLOR_RED, DEV_MODE, TARGET_MARGIN_ROI_PIXELS } from "../_constants.js";
+import { COLOR_RED, DEV_MODE, HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE, TARGET_MARGIN_ROI_PIXELS } from "../_constants.js";
+import { convertToHSV, createMask } from "./imageEffects.js";
 
 /**
  * Finds contours in the mask image
@@ -65,8 +66,9 @@ export function markLargestContour(image, contours, color, thickness) {
 
 /**
  * Based on largest contour creates target's roi
- * 
- * 
+ * @param {cv.Mat} image - Input image
+ * @param {cv.MatVector} contours - List of contours
+ * @returns {cv.Mat} - TargetROI image matrix
  */
 export function getTargetRegionOfInterest(image, contours) {
     let largestContour = getLargestContour(contours);
@@ -82,6 +84,17 @@ export function getTargetRegionOfInterest(image, contours) {
     return roi;
 }
 
+/**
+ * Detects corners in target's ROI using mask
+ * @param {cv.Mat} image - target's ROI
+ * 
+ * @returns 
+ */
+export function detectCornersInMask(image) {
+    let hsvImage = convertToHSV(image);
+    let maskImage = createMask(hsvImage, LOWER_THRESHOLD_VALUE, HIGHER_THRESHOLD_VALUE);
+}
+
 export function findPaperCorners(originalImage, mask) {
     let contours = findContoursInMask(mask);
     console.log("Countours", contours.size());
@@ -90,7 +103,7 @@ export function findPaperCorners(originalImage, mask) {
         console.error("Target not detected!");
 
     let largestContour = getLargestContour(contours);
-    console.log(largestContour);
+    console.log("Largest contour", largestContour);
 
     // TODO : NEW IMAGE NEEDS TO BE CREATED
     if (DEV_MODE)
@@ -99,5 +112,9 @@ export function findPaperCorners(originalImage, mask) {
     let targetRoiImage = getTargetRegionOfInterest(originalImage, contours);
     cv.imshow("targetRoiCanvas", targetRoiImage);
 
+    let corners = detectCornersInMask(targetRoiImage);
+
     contours.delete();
+    largestContour.delete();
+    targetRoiImage.delete();
 }
