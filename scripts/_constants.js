@@ -3,7 +3,7 @@
  * True -> debug functions will execude
  * False -> debug function are skipped
  */
-export const DEV_MODE = false;
+export const DEV_MODE = true;
 
 /** LOWER THRESHOLD VALUE
  * value reprezenting lower threshold for detecting paper color

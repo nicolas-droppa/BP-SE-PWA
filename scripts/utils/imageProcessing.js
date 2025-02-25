@@ -1,5 +1,5 @@
 import { COLOR_RED, DEV_MODE, HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE, TARGET_MARGIN_ROI_PIXELS } from "../_constants.js";
-import { applyDefaultBlur, applyMedianBlur, convertToHSV, createMask } from "./imageEffects.js";
+import { applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToHSV, createMask } from "./imageEffects.js";
 
 /**
  * Finds contours in the mask image
@@ -98,14 +98,52 @@ export function detectCornersInMask(image) {
     let mbImage = applyMedianBlur(maskImage);
     maskImage.delete();
 
-    let gbImage = applyDefaultBlur(mbImage);
+    let gbImage = applyGaussianBlur(mbImage);
     mbImage.delete();
 
     let dbImage = applyDefaultBlur(gbImage);
     gbImage.delete();
 
     cv.imshow("targetRoiCanvas", dbImage);
+
+    let contours = findContoursInMask(dbImage);
     dbImage.delete();
+    let largestContour = getLargestContour(contours);
+
+    let corners = approximateContourToPolygon(largestContour, image);
+    console.log("Corners", corners);
+    cv.imshow("targetRoiCanvas", image);
+}
+
+/**
+ * approximates largest contour to a polynom and if it is
+ * quadrilateral, function returns paper corners
+ * @param {cv.Mat} largestContour 
+ */
+export function approximateContourToPolygon(largestContour, image) {
+    let epsilon = 0.02 * cv.arcLength(largestContour, true);
+    let approx = new cv.Mat();
+    cv.approxPolyDP(largestContour, approx, epsilon, true);
+
+    if (approx.rows === 4) {
+        // If the approximation is a quadrilateral, use it as the paper corners
+        let corners = [];
+        for (let i = 0; i < approx.rows; i++) {
+            let x = approx.intPtr(i, 0)[0];
+            let y = approx.intPtr(i, 0)[1];
+            corners.push([x, y]);
+
+            if (DEV_MODE) {
+                cv.circle(image, new cv.Point(x, y), 10, new cv.Scalar(0, 255, 0, 255), -1);
+            }
+        }
+
+        approx.delete();
+        return corners;
+    }
+
+    approx.delete();
+    return null;
 }
 
 export function findPaperCorners(originalImage, mask) {
@@ -119,8 +157,8 @@ export function findPaperCorners(originalImage, mask) {
     console.log("Largest contour", largestContour);
 
     // TODO : NEW IMAGE NEEDS TO BE CREATED
-    if (DEV_MODE)
-        markLargestContour(originalImage, contours, COLOR_RED, 3);
+    /*if (DEV_MODE)
+        markLargestContour(originalImage, contours, COLOR_RED, 3);*/
 
     let targetRoiImage = getTargetRegionOfInterest(originalImage, contours);
     cv.imshow("targetRoiCanvas", targetRoiImage);
