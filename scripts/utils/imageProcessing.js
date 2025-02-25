@@ -1,5 +1,5 @@
 import { COLOR_RED, DEV_MODE, HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE, TARGET_MARGIN_ROI_PIXELS } from "../_constants.js";
-import { convertToHSV, createMask } from "./imageEffects.js";
+import { applyDefaultBlur, applyMedianBlur, convertToHSV, createMask } from "./imageEffects.js";
 
 /**
  * Finds contours in the mask image
@@ -93,6 +93,19 @@ export function getTargetRegionOfInterest(image, contours) {
 export function detectCornersInMask(image) {
     let hsvImage = convertToHSV(image);
     let maskImage = createMask(hsvImage, LOWER_THRESHOLD_VALUE, HIGHER_THRESHOLD_VALUE);
+    hsvImage.delete();
+
+    let mbImage = applyMedianBlur(maskImage);
+    maskImage.delete();
+
+    let gbImage = applyDefaultBlur(mbImage);
+    mbImage.delete();
+
+    let dbImage = applyDefaultBlur(gbImage);
+    gbImage.delete();
+
+    cv.imshow("targetRoiCanvas", dbImage);
+    dbImage.delete();
 }
 
 export function findPaperCorners(originalImage, mask) {

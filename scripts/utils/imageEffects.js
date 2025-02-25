@@ -42,3 +42,39 @@ export function createMask(image, lowerThresholdValue, higherThresholdValue) {
 
     return mask;
 }
+
+/**
+ * Applies Gaussian blur to the image
+ * 
+ * @param {cv.Mat} image - The input image matrix to be blured
+ * @returns {cv.Mat} - Blured image matrix
+ */
+export function applyGaussianBlur(image) {
+    let bluredImage = new cv.Mat();
+    cv.GaussianBlur(image, bluredImage, new cv.Size(5, 5), 1, 1, cv.BORDER_DEFAULT);
+    return bluredImage;
+}
+
+/**
+ * Applies Median blur to the image
+ * 
+ * @param {cv.Mat} image - The input image matrix to be blured
+ * @returns {cv.Mat} - Blured image matrix
+ */
+export function applyMedianBlur(image) {
+    let bluredImage = new cv.Mat();
+    cv.medianBlur(image, bluredImage, 5);
+    return bluredImage;
+}
+
+/**
+ * Applies Default (Averaging) blur to the image
+ * 
+ * @param {cv.Mat} image - The input image matrix to be blured
+ * @returns {cv.Mat} - Blured image matrix
+ */
+export function applyDefaultBlur(image) {
+    let bluredImage = new cv.Mat();
+    cv.blur(image, bluredImage, new cv.Size(5, 5));
+    return bluredImage;
+}
