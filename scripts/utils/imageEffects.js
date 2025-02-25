@@ -21,3 +21,24 @@ export function convertToHSV(image) {
     cv.cvtColor(image, hsv, cv.COLOR_BGR2HSV);
     return hsv;
 }
+
+/**
+ * Creates a mask from images
+ * 
+ * @param {cv.Mat} image - The input image matrix to be converted to hsv
+ * @param {cv.Mat} lowerThresholdValue - Lower threshold color for paper detection
+ * @param {cv.Mat} higherThresholdValue - Hower threshold color for paper detection
+ * @returns {cv.Mat} - Mask image matrix
+ */
+export function createMask(image, lowerThresholdValue, higherThresholdValue) {
+    let lowerColor = new cv.Mat(image.rows, image.cols, image.type(), lowerThresholdValue);
+    let higherColor = new cv.Mat(image.rows, image.cols, image.type(), higherThresholdValue);
+
+    let mask = new cv.Mat();
+    cv.inRange(image, lowerColor, higherColor, mask);
+
+    lowerColor.delete();
+    higherColor.delete();
+
+    return mask;
+}

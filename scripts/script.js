@@ -1,4 +1,5 @@
-import { convertToGrayScale, convertToHSV } from "./utils/imageEffects.js";
+import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
+import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     if (cv.getBuildInformation) {
@@ -47,10 +48,15 @@ function onFileUpload(event) {
         let hsvImage = convertToHSV(image);
         console.log("hsv image", hsvImage);
 
-        cv.imshow("canvas", hsvImage);
+        let maskImage = createMask(hsvImage, LOWER_THRESHOLD_VALUE, HIGHER_THRESHOLD_VALUE);
+        console.log(maskImage);
+
+        cv.imshow("canvas", maskImage);
 
         image.delete();
-        //grayImage.delete();
+        grayImage.delete();
+        hsvImage.delete();
+        maskImage.delete();
     };
 }
 
