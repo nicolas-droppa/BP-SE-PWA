@@ -52,9 +52,12 @@ function onFileUpload(event) {
         let maskImage = createMask(hsvImage, LOWER_THRESHOLD_VALUE, HIGHER_THRESHOLD_VALUE);
         console.log("Mask image", maskImage);
 
-        findPaperCorners(maskImage);
+        findPaperCorners(image, maskImage);
 
-        cv.imshow("canvas", maskImage);
+        cv.imshow("canvas", image);
+        cv.imshow("grayCanvas", grayImage);
+        cv.imshow("hsvCanvas", hsvImage);
+        cv.imshow("maskCanvas", maskImage);
 
         image.delete();
         grayImage.delete();

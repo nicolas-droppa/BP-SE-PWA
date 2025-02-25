@@ -1,3 +1,6 @@
-#canvas {
+#canvas,
+#grayCanvas,
+#hsvCanvas,
+#maskCanvas {
     width: 500px;
 }
