@@ -1,4 +1,4 @@
-import { convertToGrayScale } from "./utils/imageEffects.js";
+import { convertToGrayScale, convertToHSV } from "./utils/imageEffects.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     if (cv.getBuildInformation) {
@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
         cv.onRuntimeInitialized = onOpenCvReady;
     }
 
-    // Ensure event listener is set up for file input
     document.getElementById("fileInput").addEventListener("change", onFileUpload);
 });
 
@@ -42,13 +41,16 @@ function onFileUpload(event) {
         let image = cv.imread(imgElement);
         console.log("Image Matrix:", image);
 
-        let grayImage = convertToGrayScale(cv, image);
+        let grayImage = convertToGrayScale(image);
         console.log("Converted to Grayscale:", grayImage);
 
-        cv.imshow("canvas", grayImage);
+        let hsvImage = convertToHSV(image);
+        console.log("hsv image", hsvImage);
+
+        cv.imshow("canvas", hsvImage);
 
         image.delete();
-        grayImage.delete();
+        //grayImage.delete();
     };
 }
 
@@ -58,7 +60,7 @@ function checkOpenCv() {
         console.log("✅ OpenCV.js script found!");
         cv.onRuntimeInitialized = onOpenCvReady;
     } else {
-        console.error("❌ OpenCV.js is not loaded.");
+        console.log("❌ OpenCV.js is not loaded.");
         document.getElementById("status").textContent = "Failed to load OpenCV.js!";
     }
 }
