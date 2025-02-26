@@ -150,7 +150,7 @@ export function detectCornersBinary(image) {
 }
 
 /**
- * approximates largest contour to a polynom and if it is
+ * approximates largest contour to a polygon and if it is
  * quadrilateral, function returns paper corners
  * @param {cv.Mat} largestContour 
  */
