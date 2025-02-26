@@ -137,16 +137,23 @@ export function detectCornersBinary(image) {
     let binaryImage = applyBinaryThreshold(dbImage);
     dbImage.delete();
 
-    let bluredImage = applyDefaultBlur(binaryImage);
+    let dBluredImage = applyDefaultBlur(binaryImage);
     binaryImage.delete();
 
-    let contours = findContours(bluredImage);
+    let gBluredImage = applyGaussianBlur(dBluredImage);
+    dBluredImage.delete();
+
+    let mBluredImage = applyMedianBlur(gBluredImage);
+    gBluredImage.delete();
+
+    let contours = findContours(mBluredImage);
     // TODO: Check for no countours found and handle the case
-    bluredImage.delete();
+    mBluredImage.delete();
     let largestContour = getLargestContour(contours);
 
-    cv.imshow("targetRoiCanvas", bluredImage);
-    bluredImage.delete();
+    approximateContourToPolygon(largestContour, image);
+
+    cv.imshow("targetRoiCanvas", image);
 }
 
 /**

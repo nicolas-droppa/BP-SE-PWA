@@ -23,4 +23,4 @@ export const COLOR_RED = [255, 0, 0, 255];
 /** TARGET MARGIN
  * value that is added in target roi, for extra safe meassures in case of wrong detection
  */
-export const TARGET_MARGIN_ROI_PIXELS = 100;
+export const TARGET_MARGIN_ROI_PIXELS = 50;
