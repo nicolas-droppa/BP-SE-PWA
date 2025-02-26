@@ -1,17 +1,17 @@
 import { COLOR_RED, DEV_MODE, HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE, TARGET_MARGIN_ROI_PIXELS } from "../_constants.js";
-import { applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToHSV, createMask } from "./imageEffects.js";
+import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToGrayScale, convertToHSV, createMask } from "./imageEffects.js";
 
 /**
- * Finds contours in the mask image
+ * Finds contours in the image
  * 
- * @param {cv.Mat} mask - Binary image used for contour detection
+ * @param {cv.Mat} image - image used for contour detection
  * @returns {cv.MatVector} - The contours
  */
-export function findContoursInMask(mask) {
+export function findContours(image) {
     let contours = new cv.MatVector();
     let hierarchy = new cv.Mat();
     
-    cv.findContours(mask, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+    cv.findContours(image, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
     
     console.log(hierarchy);
 
@@ -106,13 +106,47 @@ export function detectCornersInMask(image) {
 
     cv.imshow("targetRoiCanvas", dbImage);
 
-    let contours = findContoursInMask(dbImage);
+    let contours = findContours(dbImage);
+    // TODO: Check for no countours found and handle the case
     dbImage.delete();
     let largestContour = getLargestContour(contours);
 
     let corners = approximateContourToPolygon(largestContour, image);
     console.log("Corners", corners);
     cv.imshow("targetRoiCanvas", image);
+}
+
+/**
+ * Detects corners in target's ROI by binary aproach
+ * @param {cv.Mat} image - target's ROI
+ * 
+ * @returns 
+ */
+export function detectCornersBinary(image) {
+    let grayImage = convertToGrayScale(image);
+
+    let mbImage = applyMedianBlur(grayImage);
+    grayImage.delete();
+
+    let gbImage = applyGaussianBlur(mbImage);
+    mbImage.delete();
+
+    let dbImage = applyDefaultBlur(gbImage);
+    gbImage.delete();
+
+    let binaryImage = applyBinaryThreshold(dbImage);
+    dbImage.delete();
+
+    let bluredImage = applyDefaultBlur(binaryImage);
+    binaryImage.delete();
+
+    let contours = findContours(bluredImage);
+    // TODO: Check for no countours found and handle the case
+    bluredImage.delete();
+    let largestContour = getLargestContour(contours);
+
+    cv.imshow("targetRoiCanvas", bluredImage);
+    bluredImage.delete();
 }
 
 /**
@@ -126,7 +160,7 @@ export function approximateContourToPolygon(largestContour, image) {
     cv.approxPolyDP(largestContour, approx, epsilon, true);
 
     if (approx.rows === 4) {
-        // If the approximation is a quadrilateral, use it as the paper corners
+        // If the approximation is quadrilateral, use it as paper corners
         let corners = [];
         for (let i = 0; i < approx.rows; i++) {
             let x = approx.intPtr(i, 0)[0];
@@ -147,7 +181,7 @@ export function approximateContourToPolygon(largestContour, image) {
 }
 
 export function findPaperCorners(originalImage, mask) {
-    let contours = findContoursInMask(mask);
+    let contours = findContours(mask);
     console.log("Countours", contours.size());
 
     if (contours.size() == 0)
@@ -156,14 +190,15 @@ export function findPaperCorners(originalImage, mask) {
     let largestContour = getLargestContour(contours);
     console.log("Largest contour", largestContour);
 
-    // TODO : NEW IMAGE NEEDS TO BE CREATED
+    // TODO: NEW IMAGE NEEDS TO BE CREATED
     /*if (DEV_MODE)
         markLargestContour(originalImage, contours, COLOR_RED, 3);*/
 
     let targetRoiImage = getTargetRegionOfInterest(originalImage, contours);
     cv.imshow("targetRoiCanvas", targetRoiImage);
 
-    let corners = detectCornersInMask(targetRoiImage);
+    //let corners = detectCornersInMask(targetRoiImage);
+    let corners = detectCornersBinary(targetRoiImage);
 
     contours.delete();
     largestContour.delete();

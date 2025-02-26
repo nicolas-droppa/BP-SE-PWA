@@ -78,3 +78,15 @@ export function applyDefaultBlur(image) {
     cv.blur(image, bluredImage, new cv.Size(5, 5));
     return bluredImage;
 }
+
+/**
+ * Applies binary threshold to the image
+ * 
+ * @param {cv.Mat} image - The input image matrix to be blured
+ * @returns {cv.Mat} - binarized image matrix
+ */
+export function applyBinaryThreshold(image) {
+    let binaryImage = new cv.Mat();
+    cv.threshold(image, binaryImage, 150, 255, cv.THRESH_BINARY);
+    return binaryImage;
+}
