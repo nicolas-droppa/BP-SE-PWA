@@ -17,3 +17,23 @@ export function orderPoints(points) {
     
     return rect;
 }
+
+/**
+ * Calculates the width and height of quadrilateral based on corners
+ * @param {Array<Array<number>>} corners - Corners from which it calculates
+ * 
+ * @returns {Array<number>} An array of dimensions of quadrilateral
+ */
+export function calculateWidthHeight(corners) {
+    corners = corners.map(point => [...point]);
+    
+    let width1 = Math.hypot(corners[0][0] - corners[1][0], corners[0][1] - corners[1][1]);
+    let width2 = Math.hypot(corners[2][0] - corners[3][0], corners[2][1] - corners[3][1]);
+    let height1 = Math.hypot(corners[0][0] - corners[2][0], corners[0][1] - corners[2][1]);
+    let height2 = Math.hypot(corners[1][0] - corners[3][0], corners[1][1] - corners[3][1]);
+    
+    let width = (width1 + width2) / 2;
+    let height = (height1 + height2) / 2;
+    
+    return [Math.round(width), Math.round(height)];
+}

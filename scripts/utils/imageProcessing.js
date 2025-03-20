@@ -1,5 +1,6 @@
 import { COLOR_RED, DEV_MODE, HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE, TARGET_MARGIN_ROI_PIXELS } from "../_constants.js";
 import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToGrayScale, convertToHSV, createMask } from "./imageEffects.js";
+import { orderPoints, calculateWidthHeight } from "./utilities.js";
 
 /**
  * Finds contours in the image
@@ -88,7 +89,7 @@ export function getTargetRegionOfInterest(image, contours) {
  * Detects corners in target's ROI using mask
  * @param {cv.Mat} image - target's ROI
  * 
- * @returns {Array<number>} corners
+ * @returns {Array<number>, cv.Mat} corners and target roi image
  */
 export function detectCornersInMask(image) {
     let hsvImage = convertToHSV(image);
@@ -115,14 +116,14 @@ export function detectCornersInMask(image) {
     console.log("Corners", corners);
     cv.imshow("targetRoiCanvas", image);
 
-    return corners;
+    return [corners, image];
 }
 
 /**
  * Detects corners in target's ROI by binary aproach
  * @param {cv.Mat} image - target's ROI
  * 
- * @returns {Array<number>} corners
+ * @returns {Array<number>, cv.Mat} corners and target roi image
  */
 export function detectCornersBinary(image) {
     let grayImage = convertToGrayScale(image);
@@ -157,7 +158,7 @@ export function detectCornersBinary(image) {
 
     cv.imshow("targetRoiCanvas", image);
     
-    return corners;
+    return [corners, image];
 }
 
 /**
@@ -210,12 +211,46 @@ export function findPaperCorners(originalImage, mask) {
     let targetRoiImage = getTargetRegionOfInterest(originalImage, contours);
     cv.imshow("targetRoiCanvas", targetRoiImage);
 
-    //let corners = detectCornersInMask(targetRoiImage);
-    let corners = detectCornersBinary(targetRoiImage);
+    let data = detectCornersInMask(targetRoiImage);
+    //let data = detectCornersBinary(targetRoiImage);
 
     contours.delete();
     largestContour.delete();
-    targetRoiImage.delete();
 
-    return corners;
+    return data;
+}
+
+/**
+ * Transforms perspective of an image
+ * @param {cv.Mat} image - Image to be transformed.
+ * @param {Array<Array<number>>} corners - corners [x, y]
+ * 
+ * @returns {cv.Mat} The warped image
+ */
+export function warpPerspective(image, corners) {
+    if (!image || image.isDeleted()) {
+        console.error("Error: Input image is deleted or invalid.");
+        return null;
+    }
+    let Orderedcorners = orderPoints(corners);
+
+    let dimentions = calculateWidthHeight(Orderedcorners);
+    let width = dimentions[0];
+    let height = dimentions[1];
+
+    console.log("w", width);
+    console.log("h", height);
+
+    let srcPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [].concat(...Orderedcorners));
+    let destPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [0, 0, 0, height, width, 0, width, height]);
+    
+    let matrix = cv.getPerspectiveTransform(srcPoints, destPoints);
+    let warpedImage = new cv.Mat();
+    cv.warpPerspective(image, warpedImage, matrix, new cv.Size(width, height));
+    
+    srcPoints.delete();
+    destPoints.delete();
+    matrix.delete();
+    
+    return warpedImage;
 }

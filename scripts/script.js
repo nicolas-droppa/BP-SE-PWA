@@ -1,7 +1,6 @@
 import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
 import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
-import { findPaperCorners } from "./utils/imageProcessing.js";
-import { orderPoints } from "./utils/utilities.js";
+import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     if (cv.getBuildInformation) {
@@ -53,21 +52,26 @@ function onFileUpload(event) {
         let maskImage = createMask(hsvImage, LOWER_THRESHOLD_VALUE, HIGHER_THRESHOLD_VALUE);
         console.log("Mask image", maskImage);
 
-        let corners = findPaperCorners(image, maskImage);
+        let data = findPaperCorners(image, maskImage);
+        let corners = data[0];
+        let finalTargetImage = data[1];
         console.log("Corners:", corners);
+        console.log("Final target ROI:", finalTargetImage);
 
-        corners = orderPoints(corners);
-        console.log("Ordered corners:", corners);
+        let warpedImage = warpPerspective(finalTargetImage, corners);
+        finalTargetImage.delete();
 
         cv.imshow("canvas", image);
         cv.imshow("grayCanvas", grayImage);
         cv.imshow("hsvCanvas", hsvImage);
         cv.imshow("maskCanvas", maskImage);
+        cv.imshow("warpCanvas", warpedImage);
 
         image.delete();
         grayImage.delete();
         hsvImage.delete();
         maskImage.delete();
+        warpedImage.delete();
     };
 }
 
