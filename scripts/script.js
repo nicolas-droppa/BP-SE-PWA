@@ -1,6 +1,7 @@
 import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
 import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
 import { findPaperCorners } from "./utils/imageProcessing.js";
+import { orderPoints } from "./utils/utilities.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     if (cv.getBuildInformation) {
@@ -52,7 +53,11 @@ function onFileUpload(event) {
         let maskImage = createMask(hsvImage, LOWER_THRESHOLD_VALUE, HIGHER_THRESHOLD_VALUE);
         console.log("Mask image", maskImage);
 
-        findPaperCorners(image, maskImage);
+        let corners = findPaperCorners(image, maskImage);
+        console.log("Corners:", corners);
+
+        corners = orderPoints(corners);
+        console.log("Ordered corners:", corners);
 
         cv.imshow("canvas", image);
         cv.imshow("grayCanvas", grayImage);

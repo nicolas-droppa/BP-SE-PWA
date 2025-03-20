@@ -88,7 +88,7 @@ export function getTargetRegionOfInterest(image, contours) {
  * Detects corners in target's ROI using mask
  * @param {cv.Mat} image - target's ROI
  * 
- * @returns 
+ * @returns {Array<number>} corners
  */
 export function detectCornersInMask(image) {
     let hsvImage = convertToHSV(image);
@@ -114,13 +114,15 @@ export function detectCornersInMask(image) {
     let corners = approximateContourToPolygon(largestContour, image);
     console.log("Corners", corners);
     cv.imshow("targetRoiCanvas", image);
+
+    return corners;
 }
 
 /**
  * Detects corners in target's ROI by binary aproach
  * @param {cv.Mat} image - target's ROI
  * 
- * @returns 
+ * @returns {Array<number>} corners
  */
 export function detectCornersBinary(image) {
     let grayImage = convertToGrayScale(image);
@@ -151,15 +153,19 @@ export function detectCornersBinary(image) {
     mBluredImage.delete();
     let largestContour = getLargestContour(contours);
 
-    approximateContourToPolygon(largestContour, image);
+    let corners = approximateContourToPolygon(largestContour, image);
 
     cv.imshow("targetRoiCanvas", image);
+    
+    return corners;
 }
 
 /**
  * approximates largest contour to a polygon and if it is
  * quadrilateral, function returns paper corners
  * @param {cv.Mat} largestContour 
+ * 
+ * @returns {Array<number>} corners
  */
 export function approximateContourToPolygon(largestContour, image) {
     let epsilon = 0.02 * cv.arcLength(largestContour, true);
@@ -210,4 +216,6 @@ export function findPaperCorners(originalImage, mask) {
     contours.delete();
     largestContour.delete();
     targetRoiImage.delete();
+
+    return corners;
 }
