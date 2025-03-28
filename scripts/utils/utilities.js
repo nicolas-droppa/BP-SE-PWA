@@ -37,3 +37,24 @@ export function calculateWidthHeight(corners) {
     
     return [Math.round(width), Math.round(height)];
 }
+
+/**
+ * Scales down a quadrilateral to fit max width and keeping aspect ratio
+ * @param {Array<Array<number>>} corners - Original corners
+ * @param {number} maxWidth - Maximum width to which we scale
+ * @returns {Array<Array<number>>} - New scaled-down corners
+ */
+export function scaleQuadrilateralToWidth(corners, maxWidth) {
+    let [originalWidth, originalHeight] = calculateWidthHeight(corners);
+
+    let scaleFactor = maxWidth / originalWidth;
+
+    let centroidX = corners.reduce((sum, point) => sum + point[0], 0) / corners.length;
+    let centroidY = corners.reduce((sum, point) => sum + point[1], 0) / corners.length;
+    let centroid = [centroidX, centroidY];
+
+    return corners.map(([x, y]) => [
+         centroid[0] + (x - centroid[0]) * scaleFactor,
+         centroid[1] + (y - centroid[1]) * scaleFactor
+    ]);
+}

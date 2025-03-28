@@ -1,6 +1,6 @@
 import { COLOR_RED, DEV_MODE, HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE, TARGET_MARGIN_ROI_PIXELS } from "../_constants.js";
 import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToGrayScale, convertToHSV, createMask } from "./imageEffects.js";
-import { orderPoints, calculateWidthHeight } from "./utilities.js";
+import { orderPoints, calculateWidthHeight, scaleQuadrilateralToWidth } from "./utilities.js";
 
 /**
  * Finds contours in the image
@@ -234,7 +234,9 @@ export function warpPerspective(image, corners) {
     }
     let Orderedcorners = orderPoints(corners);
 
-    let dimentions = calculateWidthHeight(Orderedcorners);
+    let scaledCorners = scaleQuadrilateralToWidth(Orderedcorners, 800);
+
+    let dimentions = calculateWidthHeight(scaledCorners);
     let width = dimentions[0];
     let height = dimentions[1];
 

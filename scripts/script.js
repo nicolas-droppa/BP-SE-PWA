@@ -12,13 +12,11 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("fileInput").addEventListener("change", onFileUpload);
 });
 
-// Function to be called when OpenCV is loaded
 function onOpenCvReady() {
     console.log("✅ OpenCV.js is fully loaded and initialized!");
     document.getElementById('status').textContent = "OpenCV.js is ready!";
 }
 
-// Function to process the uploaded image
 function onFileUpload(event) {
     if (!cv || !cv.imread) {
         console.error("❌ OpenCV is not fully loaded yet.");
@@ -86,5 +84,4 @@ function checkOpenCv() {
     }
 }
 
-// Call the function to check OpenCV
 checkOpenCv();
