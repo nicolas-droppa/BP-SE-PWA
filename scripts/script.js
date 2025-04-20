@@ -59,10 +59,10 @@ function onFileUpload(event) {
         let warpedImage = warpPerspective(finalTargetImage, corners);
         finalTargetImage.delete();
 
-        cv.imshow("canvas", image);
-        cv.imshow("grayCanvas", grayImage);
-        cv.imshow("hsvCanvas", hsvImage);
-        cv.imshow("maskCanvas", maskImage);
+        //cv.imshow("canvas", image);
+        //cv.imshow("grayCanvas", grayImage);
+        //cv.imshow("hsvCanvas", hsvImage);
+        //cv.imshow("maskCanvas", maskImage);
         cv.imshow("warpCanvas", warpedImage);
 
         image.delete();

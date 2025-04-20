@@ -105,7 +105,7 @@ export function detectCornersInMask(image) {
     let dbImage = applyDefaultBlur(gbImage);
     gbImage.delete();
 
-    cv.imshow("targetRoiCanvas", dbImage);
+    // cv.imshow("targetRoiCanvas", dbImage);
 
     let contours = findContours(dbImage);
     // TODO: Check for no countours found and handle the case
@@ -114,7 +114,7 @@ export function detectCornersInMask(image) {
 
     let corners = approximateContourToPolygon(largestContour, image);
     console.log("Corners", corners);
-    cv.imshow("targetRoiCanvas", image);
+    // cv.imshow("targetRoiCanvas", image);
 
     return [corners, image];
 }
@@ -209,7 +209,7 @@ export function findPaperCorners(originalImage, mask) {
         markLargestContour(originalImage, contours, COLOR_RED, 3);*/
 
     let targetRoiImage = getTargetRegionOfInterest(originalImage, contours);
-    cv.imshow("targetRoiCanvas", targetRoiImage);
+    // cv.imshow("targetRoiCanvas", targetRoiImage);
 
     let data = detectCornersInMask(targetRoiImage);
     //let data = detectCornersBinary(targetRoiImage);
