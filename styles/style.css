@@ -11,4 +11,7 @@ html, body {
 #maskCanvas,
 #targetRoiCanvas {
     width: 500px;
+    transform: none;
+    scale: 1;
+    border: .0625rem solid #000;
 }
