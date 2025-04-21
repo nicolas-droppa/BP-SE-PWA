@@ -69,8 +69,21 @@ function onFileUpload(event) {
         grayImage.delete();
         hsvImage.delete();
         maskImage.delete();
+
+        saveImageToCanvas(document.getElementById("warpCanvas"));
+
         warpedImage.delete();
     };
+}
+
+function saveImageToCanvas(canvas) {
+    const savedCanvas = document.createElement("canvas");
+    savedCanvas.width = canvas.width;
+    savedCanvas.height = canvas.height;
+    const savedCtx = savedCanvas.getContext("2d");
+    savedCtx.drawImage(canvas, 0, 0);
+
+    window._backgroundImage = savedCanvas;
 }
 
 // Check if OpenCV is loaded
