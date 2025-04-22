@@ -1,9 +1,18 @@
     :root {
         --color-background: #f9f9fb;
         --color-main: #fbfbfb;
+
+        --color-text: #1e1e2f;
+
         --color-shadow: #bababa;
-        --color-text: #333;
-        --color-border: #e4e4e4;
+        --color-border: #e0e0e0;
+
+        --color-accent: #00bfa6;
+        --color-accent-hover: #009c87;
+        
+        --color-success: #5eff4c;
+        --color-alert: #ff4c4c;
+        --color-danger: #fff34c;
     }
 
     * {
@@ -85,9 +94,41 @@
 
     /* Upload */
     .upload-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin-bottom: 2rem;
     }
-
+    
+    .upload-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background-color: var(--color-accent);
+        color: white;
+        padding: 1.5rem 2rem;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 0.25rem 0.625rem var(--color-shadow);
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .upload-button:hover {
+        background-color: var(--color-accent-hover);
+        box-shadow: 0 .15rem 0.255rem var(--color-shadow);
+        transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+    
+    .upload-button i {
+        font-size: 2rem;
+    }
+    /*
     .upload-label {
         display: block;
         margin-bottom: 0.5rem;
@@ -100,7 +141,7 @@
         border-radius: 0.375rem;
         border: 0.0625rem solid #ccc;
         font-size: 1rem;
-    }
+    }*/
 
     /* Canvas Area */
     .canvas-box {
