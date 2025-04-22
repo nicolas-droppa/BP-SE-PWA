@@ -69,6 +69,8 @@ function onFileUpload(event) {
         grayImage.delete();
         hsvImage.delete();
         maskImage.delete();
+        
+        document.getElementById("canvasBox").style.display = "inline-block";
 
         saveImageToCanvas(document.getElementById("warpCanvas"));
 

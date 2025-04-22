@@ -1,27 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>MyAimBuddy</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon.ico">
-    <link rel="stylesheet" href="styles/style.css">
-    <!-- Load OpenCV.js from CDN -->
+    <link rel="icon" href="/images/favicon/favicon.ico" sizes="16x16" type="image/png" />
+    <link rel="stylesheet" href="styles/style.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/opencv.js"></script>
 </head>
 <body>
-    <h2>Program pre vyhodnotenie zásahov pri športovej streľbe</h2>
-    <p id="status">Loading OpenCV.js...</p>
+    <nav class="navbar">
+        <div class="logo">MyAimBuddy</div>
+        <ul class="nav-links">
+            <li><a href="#">Upload</a></li>
+            <li><a href="#">Analyze</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
 
-    <input type="file" id="fileInput" accept="image/*">
-    <!-- <canvas id="canvas"></canvas> -->
-    <!-- <canvas id="grayCanvas"></canvas> -->
-    <!-- <canvas id="hsvCanvas"></canvas> -->
-    <!-- <canvas id="maskCanvas"></canvas> -->
-    <!-- <canvas id="targetRoiCanvas"></canvas> -->
-    <canvas id="warpCanvas"></canvas>
-    <button id="undoBtn">Undo</button>
-    <button id="redoBtn">Redo</button>
+    <main class="container">
+        <h2>Evaluate Your Shooting Accuracy</h2>
+        <p id="status">Loading OpenCV.js...</p>
+
+        <div class="upload-box">
+            <label for="fileInput" class="upload-label">Upload Target Image</label>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <div class="canvas-box" id="canvasBox">
+            <canvas id="warpCanvas"></canvas>
+            <div class="button-row">
+                <button id="undoBtn">Undo</button>
+                <button id="redoBtn">Redo</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 MyAimBuddy | Nicolas Droppa - bachelor thesis</p>
+    </footer>
 
     <script src="scripts/script.js" type="module"></script>
     <script src="scripts/handlers/selectionHandler.js" type="module"></script>
