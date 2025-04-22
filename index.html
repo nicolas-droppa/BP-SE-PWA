@@ -6,6 +6,7 @@
     <title>MyAimBuddy</title>
     <link rel="icon" href="/images/favicon/favicon.ico" sizes="16x16" type="image/png" />
     <link rel="stylesheet" href="styles/style.css" />
+    <link rel="stylesheet" href="styles/fontawesome/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/opencv.js"></script>
 </head>
 <body>
@@ -13,8 +14,8 @@
         <div class="logo">MyAimBuddy</div>
         <ul class="nav-links">
             <li><a href="#">Upload</a></li>
-            <li><a href="#">Analyze</a></li>
             <li><a href="#">About</a></li>
+            <li><a href="#">Settings</a></li>
         </ul>
     </nav>
 
@@ -23,7 +24,10 @@
         <p id="status">Loading OpenCV.js...</p>
 
         <div class="upload-box">
-            <label for="fileInput" class="upload-label">Upload Target Image</label>
+            <label for="fileInput" class="upload-label">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Upload Target Image</p>
+            </label>
             <input type="file" id="fileInput" accept="image/*">
         </div>
 

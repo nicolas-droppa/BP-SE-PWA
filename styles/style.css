@@ -3,6 +3,7 @@
         --color-main: #fbfbfb;
         --color-shadow: #bababa;
         --color-text: #333;
+        --color-border: #e4e4e4;
     }
 
     * {
@@ -10,6 +11,18 @@
         margin: 0;
         padding: 0;
         font-family: "Segoe UI", sans-serif;
+    }
+
+    html, body {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
     }
 
     html {
@@ -28,9 +41,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: var(--color-main);
+        width: 98%;
         padding: 1rem 2rem;
-        box-shadow: 0px 4px 4px var(--color-shadow);
+        border-bottom: .0625rem solid var(--color-border);
     }
 
     .navbar .logo {
@@ -45,7 +58,7 @@
     }
 
     .navbar .nav-links a {
-        color: white;
+        color: var(--color-text);
         text-decoration: none;
         font-weight: 500;
         font-size: 1rem;
@@ -57,10 +70,11 @@
 
     /* Main container */
     .container {
-        max-width: 56.25rem;
+        max-width: 100%;
         margin: 2rem auto;
         padding: 1rem;
         text-align: center;
+        flex: 1;
     }
 
     h2 {
@@ -91,7 +105,7 @@
     /* Canvas Area */
     .canvas-box {
         display: none;
-        background: white;
+        background: var(--color-main);
         padding: 1rem;
         border-radius: 0.75rem;
         box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.1);
@@ -99,7 +113,7 @@
     }
 
     canvas {
-        border: 0.0625rem solid #ddd;
+        border: 0.0625rem solid var(--color-background);
         max-width: 100%;
         height: auto;
     }
@@ -132,8 +146,9 @@
     footer {
         text-align: center;
         padding: 1.5rem;
-        background: #1e1e2f;
-        color: white;
+        width: 98%;
+        color: var(--color-text);
         margin-top: 4rem;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        border-top: .0625rem solid var(--color-border);
     }
