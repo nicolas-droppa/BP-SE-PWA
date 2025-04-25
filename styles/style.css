@@ -144,19 +144,26 @@
     }*/
 
     /* Canvas Area */
-    .canvas-box {
-        display: none;
+    .upload-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         background: var(--color-main);
         padding: 1rem;
         border-radius: 0.75rem;
         box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.1);
-        max-width: 100%;
+        width: 80vw;
+        height: 50vh;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
     }
-
+    
     canvas {
-        border: 0.0625rem solid var(--color-background);
+        background-color: grey;
         max-width: 100%;
-        height: auto;
+        max-height: 100%;
+        object-fit: contain;
     }
 
     /* Buttons */

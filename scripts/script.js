@@ -2,7 +2,7 @@ import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
 import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
 import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
 
-import { drawMinEnclosingCircleFromBrightSpots } from "./utils/autoDetectionScript.js";
+/*import { func } from "./utils/autoDetectionScript.js"; Postponed for later... */
 
 document.addEventListener("DOMContentLoaded", function () {
     if (cv.getBuildInformation) {
@@ -65,14 +65,20 @@ function onFileUpload(event) {
         //cv.imshow("grayCanvas", grayImage);
         //cv.imshow("hsvCanvas", hsvImage);
         //cv.imshow("maskCanvas", maskImage);
+        const canvas = document.getElementById("warpCanvas");
+        canvas.style.display = "block";
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        
         cv.imshow("warpCanvas", warpedImage);
+
+        document.querySelector(".button-row").style.display = "flex";
+        document.getElementById("uploadPlaceholder").style.display = "none";
 
         image.delete();
         grayImage.delete();
         hsvImage.delete();
         maskImage.delete();
-
-        document.getElementById("canvasBox").style.display = "inline-block";
 
         saveImageToCanvas(document.getElementById("warpCanvas"));
 
