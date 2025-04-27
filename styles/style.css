@@ -146,6 +146,23 @@
         color: var(--color-shadow);
     }
 
+    .loading-spinner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .loading-spinner h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    
+    .loading-spinner i {
+        color: var(--color-accent);
+        margin-bottom: 1rem;
+    }
+
     /*
     .upload-label {
         display: block;

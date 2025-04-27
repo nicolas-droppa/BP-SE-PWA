@@ -41,11 +41,19 @@ function onFileUpload(event) {
         return;
     }
 
+    document.getElementById('uploadPlaceholder').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'flex';
+
     const file = event.target.files[0];
     if (!file) {
         console.error("❌ No file selected");
+
+        // Restore if no file selected
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('uploadPlaceholder').style.display = 'flex';
         return;
     }
+
 
     const imgElement = new Image();
     const reader = new FileReader();
@@ -75,6 +83,7 @@ function onFileUpload(event) {
 
         warpCanvas.style.display = "block";
         buttonRow.style.display = "flex";
+        document.getElementById('loadingSpinner').style.display = 'none';
 
         cv.imshow("warpCanvas", warpedImage);
 
