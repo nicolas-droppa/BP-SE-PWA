@@ -2,6 +2,9 @@
         --color-background: #f9f9fb;
         --color-main: #fbfbfb;
 
+        --color-box: #e8e8e8;
+        --color-box-hover: #dedede;
+
         --color-text: #1e1e2f;
 
         --color-shadow: #bababa;
@@ -128,6 +131,21 @@
     .upload-button i {
         font-size: 2rem;
     }
+
+    .upload-text i{
+        font-size: 2.5rem;
+        color: var(--color-accent);
+    }
+
+    .upload-text h1 {
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .upload-text span {
+        color: var(--color-shadow);
+    }
+
     /*
     .upload-label {
         display: block;
@@ -145,18 +163,27 @@
 
     /* Canvas Area */
     .upload-box {
+        margin-top: 2rem;
         display: flex;
         flex-direction: column;
         align-items: center;
         background: var(--color-main);
         padding: 1rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.1);
+        border-radius: 0.25rem;
+        /* box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.1); */
+        background-color: var(--color-box);
+        outline: .0625rem dashed var(--color-border);
         width: 80vw;
         height: 50vh;
         justify-content: center;
         position: relative;
         overflow: hidden;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .upload-box:hover{
+        cursor: pointer;
+        background-color: var(--color-box-hover);
     }
     
     canvas {

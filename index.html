@@ -22,12 +22,18 @@
     <main class="container">
         <h2>Evaluate Your Shooting Accuracy</h2>
         <p id="status">Loading OpenCV.js...</p>
-
+    
         <div class="upload-box" id="uploadBox">
-            <label for="fileInput" class="upload-button" id="uploadPlaceholder">
+            <!-- <div class="upload-button" id="uploadPlaceholder">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
                 <span>Upload Target Image</span>
-            </label>
+            </div> -->
+            
+            <div class="upload-text" id="uploadPlaceholder">
+                <i class="fa-regular fa-file"></i>
+                <h1>Click to upload an image</h1>
+                <span>Evaluate any PNG or JPG target image</span>
+            </div>
             <input type="file" id="fileInput" accept="image/*" hidden>
             
             <canvas id="warpCanvas" style="display:none;"></canvas>

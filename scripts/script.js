@@ -11,13 +11,29 @@ document.addEventListener("DOMContentLoaded", function () {
         cv.onRuntimeInitialized = onOpenCvReady;
     }
 
-    document.getElementById("fileInput").addEventListener("change", onFileUpload);
+    const fileInput = document.getElementById("fileInput");
+    const uploadBox = document.getElementById("uploadBox");
+
+    fileInput.addEventListener("change", onFileUpload);
+
+    // Click anywhere on upload box (only ONCE)
+    uploadBox.addEventListener("click", openFileInput);
 });
 
 function onOpenCvReady() {
     console.log("✅ OpenCV.js is fully loaded and initialized!");
     document.getElementById('status').textContent = "OpenCV.js is ready!";
 }
+
+function openFileInput(e) {
+    // Prevent double-click if user clicks after image uploaded
+    if (uploadDisabled) return;
+
+    document.getElementById("fileInput").click();
+}
+
+// NEW: control upload click
+let uploadDisabled = false;
 
 function onFileUpload(event) {
     if (!cv || !cv.imread) {
@@ -33,56 +49,47 @@ function onFileUpload(event) {
 
     const imgElement = new Image();
     const reader = new FileReader();
-    
-    reader.onload = function(e) {
+
+    reader.onload = function (e) {
         imgElement.src = e.target.result;
     };
     reader.readAsDataURL(file);
 
-    imgElement.onload = function() {
+    imgElement.onload = function () {
         let image = cv.imread(imgElement);
         console.log("Image Matrix:", image);
 
         let grayImage = convertToGrayScale(image);
-        console.log("Grayscale image:", grayImage);
-
         let hsvImage = convertToHSV(image);
-        console.log("Hsv image", hsvImage);
-
         let maskImage = createMask(hsvImage, LOWER_THRESHOLD_VALUE, HIGHER_THRESHOLD_VALUE);
-        console.log("Mask image", maskImage);
 
         let data = findPaperCorners(image, maskImage);
         let corners = data[0];
         let finalTargetImage = data[1];
-        console.log("Corners:", corners);
-        console.log("Final target ROI:", finalTargetImage);
 
         let warpedImage = warpPerspective(finalTargetImage, corners);
         finalTargetImage.delete();
 
-        //cv.imshow("canvas", image);
-        //cv.imshow("grayCanvas", grayImage);
-        //cv.imshow("hsvCanvas", hsvImage);
-        //cv.imshow("maskCanvas", maskImage);
-        const canvas = document.getElementById("warpCanvas");
-        canvas.style.display = "block";
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-        
-        cv.imshow("warpCanvas", warpedImage);
+        const warpCanvas = document.getElementById("warpCanvas");
+        const buttonRow = document.querySelector(".button-row");
 
-        document.querySelector(".button-row").style.display = "flex";
-        document.getElementById("uploadPlaceholder").style.display = "none";
+        warpCanvas.style.display = "block";
+        buttonRow.style.display = "flex";
+
+        cv.imshow("warpCanvas", warpedImage);
 
         image.delete();
         grayImage.delete();
         hsvImage.delete();
         maskImage.delete();
-
-        saveImageToCanvas(document.getElementById("warpCanvas"));
-
         warpedImage.delete();
+
+        saveImageToCanvas(warpCanvas);
+
+        // ✅ AFTER successful upload
+        uploadDisabled = true; // disable further uploads
+        document.getElementById("uploadPlaceholder").style.display = "none"; // hide upload text
+        console.log("✅ Upload done, click disabled, now free to interact.");
     };
 }
 
@@ -96,7 +103,6 @@ function saveImageToCanvas(canvas) {
     window._backgroundImage = savedCanvas;
 }
 
-// Check if OpenCV is loaded
 function checkOpenCv() {
     if (typeof cv !== "undefined" && cv.onRuntimeInitialized) {
         console.log("✅ OpenCV.js script found!");
