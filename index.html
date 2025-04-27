@@ -35,13 +35,15 @@
                 <h2>Processing image...</h2>
             </div>
         
-            <input type="file" id="fileInput" accept="image/*" hidden>
-            
-            <canvas id="warpCanvas" style="display:none;"></canvas>
-            <div class="button-row" style="display:none;">
-                <button id="undoBtn">Undo</button>
-                <button id="redoBtn">Redo</button>
+            <div class="content-area" id="contentArea" style="display:none;">
+                <canvas id="warpCanvas"></canvas>
+                <div class="control-panel">
+                    <button id="undoBtn">Undo</button>
+                    <button id="redoBtn">Redo</button>
+                </div>
             </div>
+        
+            <input type="file" id="fileInput" accept="image/*" hidden>
         </div>
     </main>
 

@@ -78,11 +78,9 @@ function onFileUpload(event) {
         let warpedImage = warpPerspective(finalTargetImage, corners);
         finalTargetImage.delete();
 
-        const warpCanvas = document.getElementById("warpCanvas");
-        const buttonRow = document.querySelector(".button-row");
-
-        warpCanvas.style.display = "block";
-        buttonRow.style.display = "flex";
+        document.getElementById("loadingSpinner").style.display = "none";
+        document.getElementById("uploadPlaceholder").style.display = "none";
+        document.getElementById("contentArea").style.display = "flex";
         document.getElementById('loadingSpinner').style.display = 'none';
 
         cv.imshow("warpCanvas", warpedImage);
