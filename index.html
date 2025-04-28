@@ -29,24 +29,32 @@
                 <h1>Click to upload an image</h1>
                 <span>Evaluate any PNG or JPG target image</span>
             </div>
-    
-            <div class="loading-spinner" id="loadingSpinner" style="display: none;">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size: 48px;"></i>
+        
+            <div class="loading-spinner" id="loadingSpinner" style="display:none;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:48px;"></i>
                 <h2>Processing image...</h2>
             </div>
-    
-            <div class="content-area" id="contentArea" style="display: none;">
-                <div class="canvas-container">
-                    <canvas id="warpCanvas"></canvas>
+        
+            <div class="content-area" id="contentArea" style="display:none;">
+                <div class="canvas-area">
+                    <div class="top-bar">
+                        <button id="resetBtn">Reset</button>
+                        <button id="saveBtn">Save</button>
+                    </div>
+
+                    <div class="canvas-scroll">
+                        <canvas id="warpCanvas"></canvas>
+                    </div>
                 </div>
+                    
                 <div class="control-panel">
                     <button id="undoBtn">Undo</button>
                     <button id="redoBtn">Redo</button>
                 </div>
             </div>
-    
+
             <input type="file" id="fileInput" accept="image/*" hidden>
-        </div>
+        </div>        
     </main>
 
     <footer>
