@@ -185,9 +185,7 @@
         flex-direction: column;
         align-items: center;
         background: var(--color-main);
-        padding: 1rem;
-        border-radius: 0.25rem;
-        /* box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.1); */
+        border-radius: .25rem;
         background-color: var(--color-box);
         outline: .0625rem dashed var(--color-border);
         width: 80vw;
@@ -197,53 +195,53 @@
         overflow: hidden;
         transition: background 0.3s ease, transform 0.2s ease;
     }
-
-    .upload-box:hover{
+    
+    .upload-box:hover {
         cursor: pointer;
         background-color: var(--color-box-hover);
     }
     
-    canvas {
-        background-color: grey;
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
-
     .content-area {
         display: flex;
         flex-direction: row;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
         width: 100%;
         height: 100%;
-        gap: 2rem;
+    }
+    
+    .canvas-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        overflow: hidden;
     }
     
     #warpCanvas {
-        background-color: grey;
-        max-width: 70%;
+        background-color: var(--color-background);
+        max-width: 100%;
         max-height: 100%;
         object-fit: contain;
-        border-radius: 0.5rem;
         border: 0.0625rem solid var(--color-border);
-        box-shadow: 0 0.25rem 0.625rem var(--color-shadow);
     }
     
     .control-panel {
+        width: 12rem;
+        height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        gap: 1rem;
+        gap: .5rem;
         background-color: var(--color-main);
+        border-left: .0625rem solid var(--color-border);
         padding: 1rem;
-        border-radius: 0.5rem;
-        border: 0.0625rem solid var(--color-border);
-        box-shadow: 0 0.25rem 0.625rem var(--color-shadow);
-        min-width: 150px;
-        height: fit-content;
+        box-sizing: border-box;
     }
+    
+    
 
     /* Buttons */
     .button-row {
