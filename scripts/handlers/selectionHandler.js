@@ -1,3 +1,6 @@
+import { warpPerspective } from "../utils/imageProcessing.js";
+import { saveImageToCanvas } from "../script.js";
+
 const canvas = document.getElementById("warpCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -38,7 +41,9 @@ function drawCircle(x, y) {
     ctx.fill();
 }
 
-// UNDO
+/**
+ * Undo from stack of points
+ */
 function undo() {
     if (points.length > 0) {
         const last = points.pop();
@@ -47,7 +52,9 @@ function undo() {
     }
 }
 
-// REDO
+/**
+ * Redo in stack of points
+ */
 function redo() {
     if (redoStack.length > 0) {
         const restored = redoStack.pop();
@@ -56,11 +63,14 @@ function redo() {
     }
 }
 
-// Buttons
 document.getElementById("undoBtn").addEventListener("click", undo);
 document.getElementById("redoBtn").addEventListener("click", redo);
 
-// Keyboard shortcuts
+/**
+ * Handling keyboard shortcuts
+ * ctrl + z : Undo
+ * ctrl + y : Redo
+ */
 window.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.key.toLowerCase() === "z") {
         e.preventDefault();
@@ -71,3 +81,24 @@ window.addEventListener("keydown", (e) => {
         redo();
     }
 });
+
+export function completeManualSelection(originalImage) {
+    if (points.length !== 4) {
+        alert("Please select exactly 4 corners.");
+        return;
+    }
+
+    const orderedPoints = points.map(p => [p.x, p.y]);
+    const warped = warpPerspective(originalImage, orderedPoints);
+
+    cv.imshow("warpCanvas", warped);
+
+    originalImage.delete();
+    warped.delete();
+
+    document.getElementById("completeSelectionBtn").remove();
+
+    saveImageToCanvas(warpCanvas);
+
+    console.log("✅ Manual selection complete.");
+}

@@ -1,6 +1,7 @@
 import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
 import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
 import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
+import { completeManualSelection } from "./handlers/selectionHandler.js";
 
 /*import { func } from "./utils/autoDetectionScript.js"; Postponed for later... */
 
@@ -16,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fileInput.addEventListener("change", onFileUpload);
 
-    // Click anywhere on upload box (only ONCE)
     uploadBox.addEventListener("click", openFileInput);
 });
 
@@ -26,13 +26,11 @@ function onOpenCvReady() {
 }
 
 function openFileInput(e) {
-    // Prevent double-click if user clicks after image uploaded
     if (uploadDisabled) return;
 
     document.getElementById("fileInput").click();
 }
 
-// NEW: control upload click
 let uploadDisabled = false;
 
 function onFileUpload(event) {
@@ -48,7 +46,6 @@ function onFileUpload(event) {
     if (!file) {
         console.error("❌ No file selected");
 
-        // Restore if no file selected
         document.getElementById('loadingSpinner').style.display = 'none';
         document.getElementById('uploadPlaceholder').style.display = 'flex';
         return;
@@ -75,6 +72,29 @@ function onFileUpload(event) {
         let corners = data[0];
         let finalTargetImage = data[1];
 
+        /**
+         * Handle no corners detected automatically
+         */
+        if (corners == null) {
+            console.log("❌ Automatic detection failed. Switching to manual corner selection...");
+        
+            document.getElementById("loadingSpinner").style.display = "none";
+            document.getElementById("contentArea").style.display = "flex";
+        
+            cv.imshow("warpCanvas", image);
+            saveImageToCanvas(warpCanvas);
+        
+            const doneBtn = document.createElement("button");
+            doneBtn.textContent = "Done";
+            doneBtn.id = "completeSelectionBtn";
+            doneBtn.style.marginTop = "10px";
+            doneBtn.onclick = () => completeManualSelection(image);
+            document.querySelector(".control-panel").appendChild(doneBtn);
+
+            uploadDisabled = true;
+            return;
+        }
+
         let warpedImage = warpPerspective(finalTargetImage, corners);
         finalTargetImage.delete();
 
@@ -93,14 +113,13 @@ function onFileUpload(event) {
 
         saveImageToCanvas(warpCanvas);
 
-        // ✅ AFTER successful upload
-        uploadDisabled = true; // disable further uploads
-        document.getElementById("uploadPlaceholder").style.display = "none"; // hide upload text
+        uploadDisabled = true;
+        document.getElementById("uploadPlaceholder").style.display = "none";
         console.log("✅ Upload done, click disabled, now free to interact.");
     };
 }
 
-function saveImageToCanvas(canvas) {
+export function saveImageToCanvas(canvas) {
     const savedCanvas = document.createElement("canvas");
     savedCanvas.width = canvas.width;
     savedCanvas.height = canvas.height;
