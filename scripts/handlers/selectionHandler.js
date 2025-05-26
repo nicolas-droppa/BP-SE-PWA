@@ -4,83 +4,87 @@ import { saveImageToCanvas } from "../script.js";
 const canvas = document.getElementById("warpCanvas");
 const ctx = canvas.getContext("2d");
 
+canvas.style.cursor = "none";
+
 export let points = [];
 let redoStack = [];
 
-canvas.addEventListener("click", function (e) {
+let mouseX = 0;
+let mouseY = 0;
+
+const previewRadius = 5;
+
+canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
-    const x = Math.round((e.clientX - rect.left) * scaleX);
-    const y = Math.round((e.clientY - rect.top) * scaleY);
-
-    points.push({ x, y });
-    redoStack = [];
-    console.log(`Clicked at: x=${x}, y=${y}`);
-
-    redraw();
+    mouseX = (e.clientX - rect.left) * scaleX;
+    mouseY = (e.clientY - rect.top) * scaleY;
+    drawAll();
 });
 
-function redraw() {
-    if (window._backgroundImage) {
-        ctx.drawImage(window._backgroundImage, 0, 0);
-    } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+canvas.addEventListener("click", (e) => {
+    points.push({ x: mouseX, y: mouseY });
+    redoStack = [];
+    console.log(`Clicked at: x=${mouseX.toFixed(0)}, y=${mouseY.toFixed(0)}`);
+    drawAll();
+});
 
-    for (let pt of points) {
-        drawCircle(pt.x, pt.y);
-    }
-}
-
-function drawCircle(x, y) {
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, 2 * Math.PI);
-    ctx.fillStyle = "red";
-    ctx.fill();
-}
-
-/**
- * Undo from stack of points
- */
 function undo() {
-    if (points.length > 0) {
-        const last = points.pop();
-        redoStack.push(last);
-        redraw();
+    if (points.length) {
+        redoStack.push(points.pop());
+        drawAll();
     }
 }
-
-/**
- * Redo in stack of points
- */
 function redo() {
-    if (redoStack.length > 0) {
-        const restored = redoStack.pop();
-        points.push(restored);
-        redraw();
+    if (redoStack.length) {
+        points.push(redoStack.pop());
+        drawAll();
     }
 }
 
 document.getElementById("undoBtn").addEventListener("click", undo);
 document.getElementById("redoBtn").addEventListener("click", redo);
 
-/**
- * Handling keyboard shortcuts
- * ctrl + z : Undo
- * ctrl + y : Redo
- */
 window.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.key.toLowerCase() === "z") {
-        e.preventDefault();
-        undo();
+    if (e.ctrlKey && e.key === "z") {
+        e.preventDefault(); undo();
     }
-    if (e.ctrlKey && e.key.toLowerCase() === "y") {
-        e.preventDefault();
-        redo();
+    
+    if (e.ctrlKey && e.key === "y") {
+        e.preventDefault(); redo();
     }
 });
+
+
+function drawAll() {
+    if (window._backgroundImage) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(window._backgroundImage, 0, 0);
+    } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    for (let pt of points) {
+        drawCircle(pt.x, pt.y, 5, "red", true);
+    }
+
+    drawCircle(mouseX, mouseY, previewRadius, "white", false);
+}
+
+function drawCircle(x, y, radius, color, fill) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    if (fill) {
+        ctx.fillStyle = color;
+        ctx.fill();
+    } else {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+}
 
 export function completeManualSelection(originalImage) {
     if (points.length !== 4) {
@@ -95,10 +99,7 @@ export function completeManualSelection(originalImage) {
 
     originalImage.delete();
     warped.delete();
-
-    document.getElementById("completeSelectionBtn").remove();
-
+    document.getElementById("completeSelectionBtn")?.remove();
     saveImageToCanvas(warpCanvas);
-
     console.log("✅ Manual selection complete.");
 }
