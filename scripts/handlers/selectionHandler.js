@@ -4,7 +4,7 @@ import { saveImageToCanvas } from "../script.js";
 const canvas = document.getElementById("warpCanvas");
 const ctx = canvas.getContext("2d");
 
-let points = [];
+export let points = [];
 let redoStack = [];
 
 canvas.addEventListener("click", function (e) {

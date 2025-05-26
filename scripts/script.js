@@ -2,6 +2,7 @@ import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
 import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
 import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
 import { completeManualSelection } from "./handlers/selectionHandler.js";
+import { points } from './handlers/selectionHandler.js';
 
 /*import { func } from "./utils/autoDetectionScript.js"; Postponed for later... */
 
@@ -45,12 +46,10 @@ function onFileUpload(event) {
     const file = event.target.files[0];
     if (!file) {
         console.error("❌ No file selected");
-
         document.getElementById('loadingSpinner').style.display = 'none';
         document.getElementById('uploadPlaceholder').style.display = 'flex';
         return;
     }
-
 
     const imgElement = new Image();
     const reader = new FileReader();
@@ -72,52 +71,63 @@ function onFileUpload(event) {
         let corners = data[0];
         let finalTargetImage = data[1];
 
-        /**
-         * Handle no corners detected automatically
-         */
+        let warpedImage = null;
+
+        const continueWithWarpedImage = (warpSrc) => {
+            let hsvImageNew = convertToHSV(warpSrc);
+            cv.imshow("warpCanvas", hsvImageNew);
+            hsvImageNew.delete();
+
+            saveImageToCanvas(warpCanvas);
+            warpSrc.delete();
+
+            uploadDisabled = true;
+            console.log("✅ Upload done, click disabled, now free to interact.");
+        };
+
         if (corners == null) {
             console.log("❌ Automatic detection failed. Switching to manual corner selection...");
-        
+
             document.getElementById("loadingSpinner").style.display = "none";
             document.getElementById("contentArea").style.display = "flex";
-        
-            cv.imshow("warpCanvas", image);
+
+            warpedImage = image.clone();
+            cv.imshow("warpCanvas", warpedImage);
             saveImageToCanvas(warpCanvas);
-        
+
             const doneBtn = document.createElement("button");
             doneBtn.textContent = "Done";
             doneBtn.id = "completeSelectionBtn";
             doneBtn.style.marginTop = "10px";
-            doneBtn.onclick = () => completeManualSelection(image);
+            doneBtn.onclick = () => {
+                const orderedPoints = points.map(p => [p.x, p.y]);
+                let manuallyWarped = warpPerspective(image, orderedPoints);
+
+                document.getElementById("completeSelectionBtn").remove();
+                continueWithWarpedImage(manuallyWarped);
+                image.delete();
+            };
             document.querySelector(".control-panel").appendChild(doneBtn);
 
             uploadDisabled = true;
             return;
         }
 
-        let warpedImage = warpPerspective(finalTargetImage, corners);
+        warpedImage = warpPerspective(finalTargetImage, corners);
         finalTargetImage.delete();
 
         document.getElementById("loadingSpinner").style.display = "none";
-        document.getElementById("uploadPlaceholder").style.display = "none";
         document.getElementById("contentArea").style.display = "flex";
-        document.getElementById('loadingSpinner').style.display = 'none';
 
-        cv.imshow("warpCanvas", warpedImage);
+        continueWithWarpedImage(warpedImage);
 
         image.delete();
         grayImage.delete();
         hsvImage.delete();
         maskImage.delete();
-        warpedImage.delete();
-
-        saveImageToCanvas(warpCanvas);
-
-        uploadDisabled = true;
-        document.getElementById("uploadPlaceholder").style.display = "none";
-        console.log("✅ Upload done, click disabled, now free to interact.");
     };
 }
+
 
 export function saveImageToCanvas(canvas) {
     const savedCanvas = document.createElement("canvas");
