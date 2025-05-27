@@ -125,6 +125,8 @@ function onFileUpload(event) {
         grayImage.delete();
         hsvImage.delete();
         maskImage.delete();
+
+        console.log("Finished delete");
     };
 }
 
@@ -147,6 +149,29 @@ function checkOpenCv() {
         console.log("❌ OpenCV.js is not loaded.");
         document.getElementById("status").textContent = "Failed to load OpenCV.js!";
     }
+}
+
+export function resetApp() {
+    const fi = document.getElementById("fileInput");
+    fi.value = "";
+
+    document.getElementById("uploadPlaceholder").style.display = "flex";
+    uploadPlaceholder.style.flexDirection = "column";
+    uploadPlaceholder.style.alignItems = "center";
+    uploadPlaceholder.style.justifyContent = "center";
+    document.getElementById("loadingSpinner").style.display  = "none";
+    document.getElementById("contentArea").style.display     = "none";
+
+    const canvas = document.getElementById("warpCanvas");
+    const ctx    = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const doneBtn = document.getElementById("completeSelectionBtn");
+    if (doneBtn) doneBtn.remove();
+
+    delete window._backgroundImage;
+
+    uploadDisabled = false;
 }
 
 checkOpenCv();

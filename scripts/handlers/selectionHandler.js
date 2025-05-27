@@ -1,6 +1,8 @@
 import { warpPerspective } from "../utils/imageProcessing.js";
 import { saveImageToCanvas } from "../script.js";
 
+import { resetApp } from "../script.js";
+
 const canvas = document.getElementById("warpCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -46,6 +48,21 @@ function redo() {
 
 document.getElementById("undoBtn").addEventListener("click", undo);
 document.getElementById("redoBtn").addEventListener("click", redo);
+
+function newImage() {
+    points.length    = 0;
+    redoStack.length = 0;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawAll();
+
+    resetApp();
+}
+
+document.getElementById("resetBtn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    newImage();
+});
 
 window.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.key === "z") {
