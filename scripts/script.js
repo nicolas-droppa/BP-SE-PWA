@@ -127,6 +127,9 @@ function onFileUpload(event) {
         maskImage.delete();
 
         console.log("Finished delete");
+
+        const uploadBox = document.getElementById("uploadBox");
+        uploadBox.style.outlineStyle = "solid";
     };
 }
 
@@ -154,6 +157,9 @@ function checkOpenCv() {
 export function resetApp() {
     const fi = document.getElementById("fileInput");
     fi.value = "";
+
+    const uploadBox = document.getElementById("uploadBox");
+    uploadBox.style.outlineStyle = "dashed"; 
 
     document.getElementById("uploadPlaceholder").style.display = "flex";
     uploadPlaceholder.style.flexDirection = "column";

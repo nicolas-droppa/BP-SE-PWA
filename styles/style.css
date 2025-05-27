@@ -229,12 +229,29 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 1rem;
     background-color: var(--color-main);
     min-width: 150px;
     padding: 1rem 0.5rem;
     border-left: .0625rem solid var(--color-border);
+}
+
+.control-panel .title {
+    width: 100%;
+    border-bottom: .0625rem solid var(--color-box-hover);
+}
+
+.control-panel .title h2 {
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.control-panel .buttons {
+    width: 100%;
+    margin-top: auto;
+    padding-top: .5rem;
+    border-top: .0625rem solid var(--color-box-hover);
 }
 
 .button-row {
