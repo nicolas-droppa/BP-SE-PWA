@@ -1,10 +1,11 @@
 import { warpPerspective } from "../utils/imageProcessing.js";
 import { saveImageToCanvas } from "../script.js";
-
 import { resetApp } from "../script.js";
 
 const canvas = document.getElementById("warpCanvas");
-const ctx = canvas.getContext("2d");
+const ctx    = canvas.getContext("2d");
+
+const currentPointsContainer = document.querySelector(".current-points");
 
 canvas.style.cursor = "none";
 
@@ -16,64 +17,14 @@ let mouseY = 0;
 
 const previewRadius = 5;
 
-canvas.addEventListener("mousemove", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    mouseX = (e.clientX - rect.left) * scaleX;
-    mouseY = (e.clientY - rect.top) * scaleY;
-    drawAll();
-});
-
-canvas.addEventListener("click", (e) => {
-    points.push({ x: mouseX, y: mouseY });
-    redoStack = [];
-    console.log(`Clicked at: x=${mouseX.toFixed(0)}, y=${mouseY.toFixed(0)}`);
-    drawAll();
-});
-
-function undo() {
-    if (points.length) {
-        redoStack.push(points.pop());
-        drawAll();
-    }
+function updatePointsUI() {
+    currentPointsContainer.innerHTML = "";
+    points.forEach((pt, i) => {
+        const el = document.createElement("div");
+        el.textContent = `Point ${i + 1}: x=${pt.x.toFixed(0)}, y=${pt.y.toFixed(0)}`;
+        currentPointsContainer.appendChild(el);
+    });
 }
-function redo() {
-    if (redoStack.length) {
-        points.push(redoStack.pop());
-        drawAll();
-    }
-}
-
-document.getElementById("undoBtn").addEventListener("click", undo);
-document.getElementById("redoBtn").addEventListener("click", redo);
-
-function newImage() {
-    points.length    = 0;
-    redoStack.length = 0;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawAll();
-
-    resetApp();
-}
-
-document.getElementById("resetBtn").addEventListener("click", (e) => {
-    e.stopPropagation();
-    newImage();
-});
-
-window.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.key === "z") {
-        e.preventDefault(); undo();
-    }
-    
-    if (e.ctrlKey && e.key === "y") {
-        e.preventDefault(); redo();
-    }
-});
-
 
 function drawAll() {
     if (window._backgroundImage) {
@@ -83,9 +34,8 @@ function drawAll() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    for (let pt of points) {
+    for (let pt of points)
         drawCircle(pt.x, pt.y, 5, "red", true);
-    }
 
     drawCircle(mouseX, mouseY, previewRadius, "white", false);
 }
@@ -103,6 +53,68 @@ function drawCircle(x, y, radius, color, fill) {
     }
 }
 
+canvas.addEventListener("mousemove", (e) => {
+    const rect   = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    mouseX = (e.clientX - rect.left) * scaleX;
+    mouseY = (e.clientY - rect.top)  * scaleY;
+    drawAll();
+});
+
+canvas.addEventListener("click", (e) => {
+    points.push({ x: mouseX, y: mouseY });
+    redoStack = [];
+    console.log(`Clicked at: x=${mouseX.toFixed(0)}, y=${mouseY.toFixed(0)}`);
+    drawAll();
+    updatePointsUI();
+});
+
+// Undo / Redo
+function undo() {
+    if (points.length) {
+        redoStack.push(points.pop());
+        drawAll();
+        updatePointsUI();
+    }
+}
+
+function redo() {
+    if (redoStack.length) {
+        points.push(redoStack.pop());
+        drawAll();
+        updatePointsUI();
+    }
+}
+
+document.getElementById("undoBtn").addEventListener("click", undo);
+document.getElementById("redoBtn").addEventListener("click", redo);
+
+function newImage(e) {
+    e.stopPropagation();
+    points.length    = 0;
+    redoStack.length = 0;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawAll();
+    updatePointsUI();
+    resetApp();
+}
+
+document.getElementById("resetBtn").addEventListener("click", newImage);
+
+// Keyboard shortcuts
+window.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.key === "z") {
+        e.preventDefault();
+        undo();
+    }
+    if (e.ctrlKey && e.key === "y") {
+        e.preventDefault();
+        redo();
+    }
+});
+
 export function completeManualSelection(originalImage) {
     if (points.length !== 4) {
         alert("Please select exactly 4 corners.");
@@ -110,13 +122,15 @@ export function completeManualSelection(originalImage) {
     }
 
     const orderedPoints = points.map(p => [p.x, p.y]);
-    const warped = warpPerspective(originalImage, orderedPoints);
+    const warped        = warpPerspective(originalImage, orderedPoints);
 
+    // show on canvas
     cv.imshow("warpCanvas", warped);
 
     originalImage.delete();
     warped.delete();
     document.getElementById("completeSelectionBtn")?.remove();
+
     saveImageToCanvas(warpCanvas);
     console.log("✅ Manual selection complete.");
 }
