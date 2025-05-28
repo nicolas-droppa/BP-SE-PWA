@@ -11,6 +11,8 @@
     --color-border: #c0c0c0;
     --color-border-dark: #888888;
 
+    --color-background-highlight: rgba(224, 224, 224, 0.3);
+
     --color-accent: #00bfa6;
     --color-accent-hover: #009c87;
     
@@ -252,6 +254,51 @@ h2 {
     margin-top: auto;
     padding-top: .5rem;
     border-top: .0625rem solid var(--color-box-hover);
+}
+
+.current-points {
+    width: 100%;
+}
+
+.current-points .point-item {
+    position: relative;
+    background-color: var(--color-background-highlight);
+    border-radius: .25rem;
+    padding: .5rem;
+    margin-bottom: .5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.current-points .point-details {
+    font-size: .75rem;
+    line-height: 1.2;
+}
+
+.current-points .point-header {
+    font-size: .6rem;
+    color: var(--color-accent);
+    margin-bottom: .25rem;
+}
+
+.current-points .point-values {
+    position: absolute;
+    bottom: .5rem;
+    right: .5rem;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.current-points .delete-icon {
+    cursor: pointer;
+    color: var(--color-alert);
+    margin-left: .5rem;
+    font-size: .8rem;
+}
+
+.current-points .delete-icon i {
+    font-size: .5rem;
 }
 
 .button-row {

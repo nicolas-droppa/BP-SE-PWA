@@ -3,7 +3,7 @@ import { saveImageToCanvas } from "../script.js";
 import { resetApp } from "../script.js";
 
 const canvas = document.getElementById("warpCanvas");
-const ctx    = canvas.getContext("2d");
+const ctx = canvas.getContext("2d");
 
 const currentPointsContainer = document.querySelector(".current-points");
 
@@ -19,10 +19,47 @@ const previewRadius = 5;
 
 function updatePointsUI() {
     currentPointsContainer.innerHTML = "";
-    points.forEach((pt, i) => {
-        const el = document.createElement("div");
-        el.textContent = `Point ${i + 1}: x=${pt.x.toFixed(0)}, y=${pt.y.toFixed(0)}`;
-        currentPointsContainer.appendChild(el);
+
+    points.forEach((point, i) => {
+        const item = document.createElement("div");
+        item.classList.add("point-item");
+
+        const details = document.createElement("div");
+        details.classList.add("point-details");
+        const header = document.createElement("div");
+        header.classList.add("point-header");
+        header.textContent = `Point ${i + 1}`;
+        details.appendChild(header);
+        
+        const xLine = document.createElement("div");
+        xLine.textContent = `x: ${point.x.toFixed(0)}`;
+        const yLine = document.createElement("div");
+        yLine.textContent = `y: ${point.y.toFixed(0)}`;
+        details.appendChild(xLine);
+        details.appendChild(yLine);
+
+        
+        const right = document.createElement("div");
+        right.style.display = "flex";
+        right.style.alignItems = "center";
+
+        const values = document.createElement("div");
+        values.classList.add("point-values");
+        values.textContent = `9.8`;
+        right.appendChild(values);
+
+        const del = document.createElement("i");
+        del.className = "fa-solid fa-xmark delete-icon";
+        del.addEventListener("click", () => {
+            points.splice(i, 1);
+            updatePointsUI();
+            drawAll();
+        });
+        right.appendChild(del);
+
+        item.appendChild(details);
+        item.appendChild(right);
+        currentPointsContainer.appendChild(item);
     });
 }
 
@@ -54,7 +91,7 @@ function drawCircle(x, y, radius, color, fill) {
 }
 
 canvas.addEventListener("mousemove", (e) => {
-    const rect   = canvas.getBoundingClientRect();
+    const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width  / rect.width;
     const scaleY = canvas.height / rect.height;
 
@@ -93,7 +130,7 @@ document.getElementById("redoBtn").addEventListener("click", redo);
 
 function newImage(e) {
     e.stopPropagation();
-    points.length    = 0;
+    points.length = 0;
     redoStack.length = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawAll();
@@ -122,9 +159,8 @@ export function completeManualSelection(originalImage) {
     }
 
     const orderedPoints = points.map(p => [p.x, p.y]);
-    const warped        = warpPerspective(originalImage, orderedPoints);
+    const warped = warpPerspective(originalImage, orderedPoints);
 
-    // show on canvas
     cv.imshow("warpCanvas", warped);
 
     originalImage.delete();
