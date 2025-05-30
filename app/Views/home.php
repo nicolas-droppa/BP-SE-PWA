@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'myAimBuddy | Evaluation';
+$pageTitle = 'MyAimBuddy | Evaluation';
 $includeScripts = [
     ['src' => './scripts/script.js',           'module' => true],
     ['src' => './scripts/handlers/selectionHandler.js', 'module' => true],
