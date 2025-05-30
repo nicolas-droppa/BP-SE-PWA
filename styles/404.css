@@ -1,0 +1,61 @@
+:root {
+    --color-background: #f9f9fb;
+    --color-main: #fbfbfb;
+
+    --color-box: #e8e8e8;
+    --color-box-hover: #dedede;
+
+    --color-text: #1e1e2f;
+
+    --color-shadow: #bababa;
+    --color-border: #c0c0c0;
+    --color-border-dark: #888888;
+
+    --color-background-highlight: rgba(224, 224, 224, 0.3);
+
+    --color-accent: #00bfa6;
+    --color-accent-hover: #009c87;
+    
+    --color-success: #5eff4c;
+    --color-alert: #ff4c4c;
+    --color-danger: #fff34c;
+}
+
+.error-page {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.title {
+    font-size: 4rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+}
+
+.message {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--color-text);
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-border);
+    color: #fff;
+    border: none;
+    border-radius: 0.15rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.button i {
+    margin-top: .2rem;
+}
+
+.button:hover {
+    background-color: var(--color-border-dark);
+}

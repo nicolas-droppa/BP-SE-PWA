@@ -1,85 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>MyAimBuddy</title>
-    <link rel="icon" href="./images/favicon/favicon.ico" sizes="16x16" type="image/png" />
-    <link rel="stylesheet" href="styles/style.css"/>
-    <link rel="stylesheet" href="styles/fontawesome/css/all.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/opencv.js"></script>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="logo">MyAimBuddy</div>
-        <ul class="nav-links">
-        <li><a href="#">Upload</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Settings</a></li>
-        </ul>
-    </nav>
+<?php
+$pageTitle = 'myAimBuddy | Evaluation';
+$includeScripts = [
+    ['src' => './scripts/script.js',           'module' => true],
+    ['src' => './scripts/handlers/selectionHandler.js', 'module' => true],
+    ['src' => './scripts/design/navbar.js',  'module' => false],
+];
+require __DIR__ . '/layouts/header.php';
+require __DIR__ . '/layouts/navigation.php';
+?>
 
-    <main class="container">
-        <h2>Evaluate Your Shooting Accuracy</h2>
-        <p id="status">Loading OpenCV.js...</p>
-    
-        <div class="upload-box" id="uploadBox">
-            <div class="upload-text" id="uploadPlaceholder">
-                <i class="fa-regular fa-file"></i>
-                <h1>Click to upload an image</h1>
-                <span>Evaluate any PNG or JPG target image</span>
-            </div>
-        
-            <div class="loading-spinner" id="loadingSpinner" style="display:none;">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size:48px;"></i>
-                <h2>Processing image...</h2>
-            </div>
-        
-            <div class="content-area" id="contentArea" style="display:none;">
-                <div class="canvas-area">
-                    <div class="top-bar">
-                        <button id="resetBtn">
-                            <i class="fa-solid fa-arrow-left"></i>
-                        </button>
-                        <button id="saveBtn">
-                            <i class="fa-regular fa-floppy-disk"></i>
-                        </button>
-                    </div>
+<h2>Evaluate Your Shooting Accuracy</h2>
+<p id="status">Loading OpenCV.js...</p>
 
-                    <div class="canvas-scroll">
-                        <canvas id="warpCanvas"></canvas>
-                    </div>
-                </div>
-                    
-                <div class="control-panel">
-                    <div class="title">
-                        <h2>Current points</h2>
-                    </div>
-                    <div class="current-points">
-                        
-                    </div>
-                    <div class="buttons">
-                        <button id="undoBtn">
-                            <i class="fa-solid fa-arrow-rotate-left"></i> Undo
-                        </button>
-                        <button id="redoBtn">
-                            <i class="fa-solid fa-arrow-rotate-right"></i> Redo
-                        </button>
-                    </div>
-                    <button id="doneSelectionBtn" style="display: none;">Done</button>
-                </div>
+<div class="upload-box" id="uploadBox">
+    <div class="upload-text" id="uploadPlaceholder">
+        <i class="fa-regular fa-file"></i>
+        <h1>Click to upload an image</h1>
+        <span>Evaluate any PNG or JPG target image</span>
+    </div>
+
+    <div class="loading-spinner" id="loadingSpinner" style="display:none;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size:48px;"></i>
+        <h2>Processing image...</h2>
+    </div>
+
+    <div class="content-area" id="contentArea" style="display:none;">
+        <div class="canvas-area">
+            <div class="top-bar">
+                <button id="resetBtn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button id="saveBtn">
+                    <i class="fa-regular fa-floppy-disk"></i>
+                </button>
             </div>
 
-            <input type="file" id="fileInput" accept="image/*" hidden>
-        </div>        
-    </main>
+            <div class="canvas-scroll">
+                <canvas id="warpCanvas"></canvas>
+            </div>
+        </div>
+            
+        <div class="control-panel">
+            <div class="title">
+                <h2>Current points</h2>
+            </div>
+            <div class="current-points">
+                
+            </div>
+            <div class="buttons">
+                <button id="undoBtn">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Undo
+                </button>
+                <button id="redoBtn">
+                    <i class="fa-solid fa-arrow-rotate-right"></i> Redo
+                </button>
+            </div>
+            <button id="doneSelectionBtn" style="display: none;">Done</button>
+        </div>
+    </div>
 
-    <footer>
-        <p>© 2025 MyAimBuddy | Nicolas Droppa - bachelor thesis</p>
-    </footer>
+    <input type="file" id="fileInput" accept="image/*" hidden>
+</div>        
 
-    <script src="scripts/script.js" type="module"></script>
-    <script src="scripts/handlers/selectionHandler.js" type="module"></script>
-    <script src="scripts/design/navbar.js"></script>
-</body>
-</html>
+<?php
+require __DIR__ . '/layouts/footer.php';

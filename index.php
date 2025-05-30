@@ -20,7 +20,5 @@ if ($uri == '' || $uri == '/myAimBuddy') {
     $controller = new ShotController();
     $controller->listAll();
 } else {
-    // 404 Not Found
-    http_response_code(404);
-    echo '<h1>404 — Stránka nenájdená</h1>';
+    require __DIR__ . '/app/Views/404.php';
 }
