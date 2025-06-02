@@ -1,8 +1,10 @@
 import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
-import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
+/*import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";*/
 import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
 import { completeManualSelection } from "./handlers/selectionHandler.js";
 import { points } from './handlers/selectionHandler.js';
+import { computeContentCentroid, preprocessForCircles, detectCircles, drawCirclesOnMat } from "./utils/targetDetection.js";
+import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
 
 /*import { func } from "./utils/autoDetectionScript.js"; Postponed for later... */
 
@@ -17,18 +19,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const uploadBox = document.getElementById("uploadBox");
 
     fileInput.addEventListener("change", onFileUpload);
-
     uploadBox.addEventListener("click", openFileInput);
 });
 
 function onOpenCvReady() {
     console.log("✅ OpenCV.js is fully loaded and initialized!");
-    document.getElementById('status').textContent = "OpenCV.js is ready!";
+    document.getElementById("status").textContent = "OpenCV.js is ready!";
 }
 
 function openFileInput(e) {
     if (uploadDisabled) return;
-
     document.getElementById("fileInput").click();
 }
 
@@ -40,14 +40,14 @@ function onFileUpload(event) {
         return;
     }
 
-    document.getElementById('uploadPlaceholder').style.display = 'none';
-    document.getElementById('loadingSpinner').style.display = 'flex';
+    document.getElementById("uploadPlaceholder").style.display = "none";
+    document.getElementById("loadingSpinner").style.display = "flex";
 
     const file = event.target.files[0];
     if (!file) {
         console.error("❌ No file selected");
-        document.getElementById('loadingSpinner').style.display = 'none';
-        document.getElementById('uploadPlaceholder').style.display = 'flex';
+        document.getElementById("loadingSpinner").style.display = "none";
+        document.getElementById("uploadPlaceholder").style.display = "flex";
         return;
     }
 
@@ -60,79 +60,127 @@ function onFileUpload(event) {
     reader.readAsDataURL(file);
 
     imgElement.onload = function () {
-        let image = cv.imread(imgElement);
-        console.log("Image Matrix:", image);
+    let image = cv.imread(imgElement);
+    console.log("Image Matrix:", image);
 
-        let grayImage = convertToGrayScale(image);
-        let hsvImage = convertToHSV(image);
-        let maskImage = createMask(hsvImage, LOWER_THRESHOLD_VALUE, HIGHER_THRESHOLD_VALUE);
+    let grayImage = convertToGrayScale(image);
+    let hsvImage = convertToHSV(image);
+    let maskImage = createMask(
+        hsvImage,
+        LOWER_THRESHOLD_VALUE,
+        HIGHER_THRESHOLD_VALUE
+    );
 
-        let data = findPaperCorners(image, maskImage);
-        let corners = data[0];
-        let finalTargetImage = data[1];
+    let data = findPaperCorners(image, maskImage);
+    let corners = data[0];
+    let finalTargetImage = data[1];
+    let warpedImage = null;
 
-        let warpedImage = null;
+    const continueWithWarpedImage = (warpSrc) => {
+        const centroid = computeContentCentroid(warpSrc);
+        console.log("cc: ", centroid);
+        cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
 
-        const continueWithWarpedImage = (warpSrc) => {
-            let hsvImageNew = convertToHSV(warpSrc);
-            cv.imshow("warpCanvas", hsvImageNew);
-            hsvImageNew.delete();
+        let blurredGray = preprocessForCircles(warpSrc);
 
-            saveImageToCanvas(warpCanvas);
-            warpSrc.delete();
+        /*const dp = 2.0;           // accumulator resolution ratio
+        const minDist = 20;       // minimum distance between detected centers
+        const param1 = 220;       // higher Canny threshold
+        const param2 = 200;        // center detection threshold (lower = more sensitive)
+        const minRadius = 10;     // expected smallest ring radius
+        const maxRadius = 200;    // expected largest ring radius
 
-            uploadDisabled = true;
-            console.log("✅ Upload done, click disabled, now free to interact.");
-        };
+        let circles = detectCircles(
+            blurredGray,
+            dp,
+            minDist,
+            param1,
+            param2,
+            minRadius,
+            maxRadius
+        );
+        blurredGray.delete();
+        console.log("Detected rings:", circles);
 
-        if (corners == null) {
-            console.log("❌ Automatic detection failed. Switching to manual corner selection...");
+        //drawCirclesOnMat(warpSrc, circles);*/
 
-            document.getElementById("loadingSpinner").style.display = "none";
-            document.getElementById("contentArea").style.display = "flex";
+        let hsvImageNew = convertToHSV(warpSrc);
+        /*let aaa = createMask(
+            hsvImageNew,
+            LOWER_THRESHOLD_VALUE,
+            HIGHER_THRESHOLD_VALUE
+        );*/
 
-            warpedImage = image.clone();
-            cv.imshow("warpCanvas", warpedImage);
-            saveImageToCanvas(warpCanvas);
+        /*let grayImage = convertToGrayScale(warpSrc);
+        
+        let mbImage = applyMedianBlur(grayImage);
+        grayImage.delete();
+    
+        let gbImage = applyGaussianBlur(mbImage);
+        mbImage.delete();
+    
+        let dbImage = applyDefaultBlur(gbImage);
+        gbImage.delete();
+    
+        let binaryImage = applyBinaryThreshold(dbImage);
+        dbImage.delete();*/
 
-            const doneBtn = document.createElement("button");
-            doneBtn.textContent = "Done";
-            doneBtn.id = "completeSelectionBtn";
-            doneBtn.style.marginTop = "10px";
-            doneBtn.onclick = () => {
-                const orderedPoints = points.map(p => [p.x, p.y]);
-                let manuallyWarped = warpPerspective(image, orderedPoints);
+        cv.imshow("warpCanvas", warpSrc);
+        hsvImageNew.delete();
 
-                document.getElementById("completeSelectionBtn").remove();
-                continueWithWarpedImage(manuallyWarped);
-                image.delete();
-            };
-            document.querySelector(".control-panel").appendChild(doneBtn);
+        saveImageToCanvas(warpCanvas);
+        warpSrc.delete();
 
-            uploadDisabled = true;
-            return;
-        }
+        uploadDisabled = true;
+        console.log("✅ Upload done, rings detected, click disabled.");
+    };
 
-        warpedImage = warpPerspective(finalTargetImage, corners);
-        finalTargetImage.delete();
+    if (corners == null) {
+        console.log("❌ Automatic detection failed. Switching to manual corner selection...");
 
         document.getElementById("loadingSpinner").style.display = "none";
         document.getElementById("contentArea").style.display = "flex";
 
-        continueWithWarpedImage(warpedImage);
+        warpedImage = image.clone();
+        cv.imshow("warpCanvas", warpedImage);
+        saveImageToCanvas(warpCanvas);
 
-        image.delete();
-        grayImage.delete();
-        hsvImage.delete();
-        maskImage.delete();
+        const doneBtn = document.createElement("button");
+        doneBtn.textContent = "Done";
+        doneBtn.id = "completeSelectionBtn";
+        doneBtn.style.marginTop = "10px";
+        doneBtn.onclick = () => {
+            const orderedPoints = points.map((p) => [p.x, p.y]);
+            let manuallyWarped = warpPerspective(image, orderedPoints);
 
-        console.log("Finished delete");
+            document.getElementById("completeSelectionBtn").remove();
+            continueWithWarpedImage(manuallyWarped);
+            image.delete();
+        };
+        document.querySelector(".control-panel").appendChild(doneBtn);
 
-        const uploadBox = document.getElementById("uploadBox");
-        uploadBox.style.outlineStyle = "solid";
+        uploadDisabled = true;
+        return;
+    }
+
+    warpedImage = warpPerspective(finalTargetImage, corners);
+    finalTargetImage.delete();
+
+    document.getElementById("loadingSpinner").style.display = "none";
+    document.getElementById("contentArea").style.display = "flex";
+
+    continueWithWarpedImage(warpedImage);
+
+    image.delete();
+    grayImage.delete();
+    hsvImage.delete();
+    maskImage.delete();
+    console.log("Finished cleanup");
+
+    const uploadBox = document.getElementById("uploadBox");
+    uploadBox.style.outlineStyle = "solid";
     };
 }
-
 
 export function saveImageToCanvas(canvas) {
     const savedCanvas = document.createElement("canvas");
@@ -140,7 +188,6 @@ export function saveImageToCanvas(canvas) {
     savedCanvas.height = canvas.height;
     const savedCtx = savedCanvas.getContext("2d");
     savedCtx.drawImage(canvas, 0, 0);
-
     window._backgroundImage = savedCanvas;
 }
 
@@ -150,7 +197,8 @@ function checkOpenCv() {
         cv.onRuntimeInitialized = onOpenCvReady;
     } else {
         console.log("❌ OpenCV.js is not loaded.");
-        document.getElementById("status").textContent = "Failed to load OpenCV.js!";
+        document.getElementById("status").textContent =
+        "Failed to load OpenCV.js!";
     }
 }
 
@@ -159,17 +207,17 @@ export function resetApp() {
     fi.value = "";
 
     const uploadBox = document.getElementById("uploadBox");
-    uploadBox.style.outlineStyle = "dashed"; 
+    uploadBox.style.outlineStyle = "dashed";
 
     document.getElementById("uploadPlaceholder").style.display = "flex";
     uploadPlaceholder.style.flexDirection = "column";
     uploadPlaceholder.style.alignItems = "center";
     uploadPlaceholder.style.justifyContent = "center";
-    document.getElementById("loadingSpinner").style.display  = "none";
-    document.getElementById("contentArea").style.display     = "none";
+    document.getElementById("loadingSpinner").style.display = "none";
+    document.getElementById("contentArea").style.display = "none";
 
     const canvas = document.getElementById("warpCanvas");
-    const ctx    = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const doneBtn = document.getElementById("completeSelectionBtn");
