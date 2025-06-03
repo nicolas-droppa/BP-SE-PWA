@@ -236,6 +236,8 @@ export function warpPerspective(image, corners) {
 
     let scaledCorners = scaleQuadrilateralToWidth(Orderedcorners, 800);
 
+    //let dimentions = calculateWidthHeight(Orderedcorners);
+
     let dimentions = calculateWidthHeight(scaledCorners);
     let width = dimentions[0];
     let height = dimentions[1];

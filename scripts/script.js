@@ -3,7 +3,7 @@ import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
 import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
 import { completeManualSelection } from "./handlers/selectionHandler.js";
 import { points } from './handlers/selectionHandler.js';
-import { computeContentCentroid, preprocessForCircles, detectCircles, drawCirclesOnMat } from "./utils/targetDetection.js";
+import { computeContentCentroid, preprocessForCircles, detectRingsByEllipseFit, drawCirclesOnMat } from "./utils/targetDetection.js";
 import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
 
 /*import { func } from "./utils/autoDetectionScript.js"; Postponed for later... */
@@ -81,49 +81,27 @@ function onFileUpload(event) {
         console.log("cc: ", centroid);
         cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
 
-        let blurredGray = preprocessForCircles(warpSrc);
+        const ellipses = detectRingsByEllipseFit(warpSrc, {
+            threshold:          100,
+            minContourArea:     10,
+            centerTolerance:    5,
+            axisRatioTolerance: 0.5,
+            maxEllipseCount:    10
+        });
+        console.log("Detected ellipses:", ellipses);
 
-        /*const dp = 2.0;           // accumulator resolution ratio
-        const minDist = 20;       // minimum distance between detected centers
-        const param1 = 220;       // higher Canny threshold
-        const param2 = 200;        // center detection threshold (lower = more sensitive)
-        const minRadius = 10;     // expected smallest ring radius
-        const maxRadius = 200;    // expected largest ring radius
+        for (let e of ellipses) {
+            const ex = e.center.x;
+            const ey = e.center.y;
 
-        let circles = detectCircles(
-            blurredGray,
-            dp,
-            minDist,
-            param1,
-            param2,
-            minRadius,
-            maxRadius
-        );
-        blurredGray.delete();
-        console.log("Detected rings:", circles);
+            const ax = e.size.width  / 2;
+            const ay = e.size.height / 2;
+            const angle = e.angle;
 
-        //drawCirclesOnMat(warpSrc, circles);*/
+            cv.ellipse(warpSrc, new cv.Point(ex, ey), new cv.Size(ax, ay), angle, 0, 360, [255, 0, 0, 255], 2);
+        }
 
         let hsvImageNew = convertToHSV(warpSrc);
-        /*let aaa = createMask(
-            hsvImageNew,
-            LOWER_THRESHOLD_VALUE,
-            HIGHER_THRESHOLD_VALUE
-        );*/
-
-        /*let grayImage = convertToGrayScale(warpSrc);
-        
-        let mbImage = applyMedianBlur(grayImage);
-        grayImage.delete();
-    
-        let gbImage = applyGaussianBlur(mbImage);
-        mbImage.delete();
-    
-        let dbImage = applyDefaultBlur(gbImage);
-        gbImage.delete();
-    
-        let binaryImage = applyBinaryThreshold(dbImage);
-        dbImage.delete();*/
 
         cv.imshow("warpCanvas", warpSrc);
         hsvImageNew.delete();

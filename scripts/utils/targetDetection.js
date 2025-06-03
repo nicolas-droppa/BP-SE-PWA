@@ -68,38 +68,91 @@ export function computeContentCentroid(warpedMat) {
     return { x: cx, y: cy };
 }
 
-/**
- * Run HoughCircles on a blurred grayscale Mat.
- * Returns an array of { x, y, r }.
- *
- * - dp: resolution ratio (usually 1.0)
- * - minDist: min distance between centers (pixels)
- * - param1: Canny high threshold (100–200)
- * - param2: accumulator threshold (30–50)
- * - minRadius, maxRadius: expected radius range (pixels)
- */
-export function detectCircles(blurredGray, dp, minDist, param1, param2, minRadius, maxRadius) {
-    let circles = new cv.Mat();
-    cv.HoughCircles(
-        blurredGray,
-        circles,
-        cv.HOUGH_GRADIENT,
-        dp,
-        minDist,
-        param1,
-        param2,
-        minRadius,
-        maxRadius
-    );
+export function detectRingsByEllipseFit(warpSrc, opts = {}) {
+    const {
+        threshold           = 100,
+        minContourArea      = 80,
+        centerTolerance     = 5,
+        axisRatioTolerance  = 0.2,
+        maxEllipseCount     = 10
+    } = opts;
 
-    let result = [];
-    for (let i = 0; i < circles.cols; i++) {
-        const x = circles.data32F[i * 3];
-        const y = circles.data32F[i * 3 + 1];
-        const r = circles.data32F[i * 3 + 2];
-        result.push({ x: Math.round(x), y: Math.round(y), r: Math.round(r) });
+    const centroid = computeContentCentroid(warpSrc);
+    const cx = centroid.x;
+    const cy = centroid.y;
+
+    let gray = new cv.Mat();
+    if (warpSrc.channels() === 4) {
+        cv.cvtColor(warpSrc, gray, cv.COLOR_RGBA2GRAY);
+    } else if (warpSrc.channels() === 3) {
+        cv.cvtColor(warpSrc, gray, cv.COLOR_RGB2GRAY);
+    } else {
+        warpSrc.copyTo(gray);
     }
-    circles.delete();
+    let thresh = new cv.Mat();
+    cv.threshold(gray, thresh, threshold, 255, cv.THRESH_BINARY_INV);
+    gray.delete();
+
+    let contours = new cv.MatVector();
+    let hierarchy = new cv.Mat();
+    cv.findContours(
+        thresh,
+        contours,
+        hierarchy,
+        cv.RETR_EXTERNAL,
+        cv.CHAIN_APPROX_SIMPLE
+    );
+    thresh.delete();
+    hierarchy.delete();
+
+    const candidates = [];
+    for (let i = 0; i < contours.size(); i++) {
+        const cnt = contours.get(i);
+        const area = cv.contourArea(cnt, false);
+        if (area < minContourArea) {
+            cnt.delete();
+            continue;
+        }
+
+        if (cnt.rows < 5) {
+            cnt.delete();
+            continue;
+        }
+
+        const rawEllipse = cv.fitEllipse(cnt);
+        cnt.delete();
+
+        const ex = rawEllipse.center.x;
+        const ey = rawEllipse.center.y;
+        const ew = rawEllipse.size.width;
+        const eh = rawEllipse.size.height;
+
+        const dx = ex - cx;
+        const dy = ey - cy;
+        if (Math.hypot(dx, dy) > centerTolerance)
+            continue;
+
+        const ratio = ew > eh ? (eh / ew) : (ew / eh);
+        if (ratio < (1 - axisRatioTolerance))
+            continue;
+
+
+        candidates.push({
+        center: { x: ex, y: ey },
+        size:   { width: ew, height: eh },
+        angle: rawEllipse.angle
+        });
+    }
+    contours.delete();
+
+    candidates.sort((a, b) => {
+        const ma = (a.size.width + a.size.height) / 2;
+        const mb = (b.size.width + b.size.height) / 2;
+        return mb - ma;
+    });
+
+    const result = candidates.slice(0, maxEllipseCount);
+
     return result;
 }
 
