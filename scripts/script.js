@@ -3,7 +3,7 @@ import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
 import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
 import { completeManualSelection } from "./handlers/selectionHandler.js";
 import { points } from './handlers/selectionHandler.js';
-import { computeContentCentroid, preprocessForCircles, detectRingsByEllipseFit, drawCirclesOnMat } from "./utils/targetDetection.js";
+import { computeContentCentroid, detectRingsByEllipseFit } from "./utils/targetDetection.js";
 import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
 
 /*import { func } from "./utils/autoDetectionScript.js"; Postponed for later... */

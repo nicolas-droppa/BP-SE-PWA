@@ -151,44 +151,9 @@ export function detectRingsByEllipseFit(warpSrc, opts = {}) {
         return mb - ma;
     });
 
-    const result = candidates.slice(0, maxEllipseCount);
+    let result = [];
+    if (candidates.length > 0)
+        result.push(candidates[candidates.length - 1]);
 
     return result;
 }
-
-/**
- * Preprocess a warped RGBA Mat into a blurred grayscale Mat
- * that’s ready for HoughCircles().
- */
-export function preprocessForCircles(warpedMat) {
-    let gray = new cv.Mat();
-    cv.cvtColor(warpedMat, gray, cv.COLOR_RGBA2GRAY);
-
-    // Gaussian blur with a 5×5 kernel, sigma ≈1.5
-    let blurred = new cv.Mat();
-    cv.GaussianBlur(
-        gray,
-        blurred,
-        new cv.Size(5, 5),
-        1.5,
-        1.5,
-        cv.BORDER_DEFAULT
-    );
-    gray.delete();
-
-    return blurred;  // a single‐channel Mat
-}
-
-/**
- * Draws each circle (and its center) onto an RGBA Mat for visualization.
- * - warpedMat: RGBA Mat
- * - circles: array of { x, y, r }
- */
-export function drawCirclesOnMat(warpedMat, circles) {
-    for (let i = 0; i < circles.length; i++) {
-        const { x, y, r } = circles[i];
-        cv.circle(warpedMat, new cv.Point(x, y), r, [255, 0, 0, 255], 1);
-        cv.circle(warpedMat, new cv.Point(x, y), 3, [0, 255, 0, 255], cv.FILLED);
-    }
-}
-
