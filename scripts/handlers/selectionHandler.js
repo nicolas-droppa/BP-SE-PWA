@@ -1,6 +1,7 @@
 import { warpPerspective } from "../utils/imageProcessing.js";
 import { saveImageToCanvas } from "../script.js";
 import { resetApp } from "../script.js";
+import { getScore } from './scoringSystem.js';
 
 const canvas = document.getElementById("warpCanvas");
 const ctx = canvas.getContext("2d");
@@ -21,6 +22,15 @@ function updatePointsUI() {
     currentPointsContainer.innerHTML = "";
 
     points.forEach((point, i) => {
+        const ellipse = window._currentEllipse;
+        if (!ellipse) {
+            console.warn("Elipsa ešte nebola detegovaná");
+            return;
+        }
+
+        const score = getScore(point, ellipse);
+        console.log("Score:", score);
+
         const item = document.createElement("div");
         item.classList.add("point-item");
 

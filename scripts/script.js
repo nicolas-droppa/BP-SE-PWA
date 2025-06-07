@@ -8,6 +8,8 @@ import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianB
 
 /*import { func } from "./utils/autoDetectionScript.js"; Postponed for later... */
 
+window._currentEllipse = null;
+
 document.addEventListener("DOMContentLoaded", function () {
     if (cv.getBuildInformation) {
         onOpenCvReady();
@@ -81,25 +83,26 @@ function onFileUpload(event) {
         console.log("cc: ", centroid);
         cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
 
-        const ellipses = detectRingsByEllipseFit(warpSrc, {
+        const ellipse = detectRingsByEllipseFit(warpSrc, {
             threshold:          100,
             minContourArea:     10,
             centerTolerance:    5,
             axisRatioTolerance: 0.5,
             maxEllipseCount:    10
         });
-        console.log("Detected ellipses:", ellipses);
+        console.log("Detected ellipse:", ellipse[0]);
+        
+        const ex = ellipse[0].center.x;
+        const ey = ellipse[0].center.y;
 
-        for (let e of ellipses) {
-            const ex = e.center.x;
-            const ey = e.center.y;
+        const ax = ellipse[0].size.width  / 2;
+        const ay = ellipse[0].size.height / 2;
+        const angle = ellipse[0].angle;
 
-            const ax = e.size.width  / 2;
-            const ay = e.size.height / 2;
-            const angle = e.angle;
+        cv.ellipse(warpSrc, new cv.Point(ex, ey), new cv.Size(ax, ay), angle, 0, 360, [255, 0, 0, 255], 2);
 
-            cv.ellipse(warpSrc, new cv.Point(ex, ey), new cv.Size(ax, ay), angle, 0, 360, [255, 0, 0, 255], 2);
-        }
+        window._currentEllipse = ellipse[0];
+
 
         let hsvImageNew = convertToHSV(warpSrc);
 
@@ -202,6 +205,7 @@ export function resetApp() {
     if (doneBtn) doneBtn.remove();
 
     delete window._backgroundImage;
+    delete window._currentEllipse;
 
     uploadDisabled = false;
 }
