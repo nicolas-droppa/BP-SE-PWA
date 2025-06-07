@@ -78,8 +78,8 @@ export function detectRingsByEllipseFit(warpSrc, opts = {}) {
     } = opts;
 
     const centroid = computeContentCentroid(warpSrc);
-    const cx = centroid.x;
-    const cy = centroid.y;
+    const cx = Math.round(centroid.x);
+    const cy = Math.round(centroid.y);
 
     let gray = new cv.Mat();
     if (warpSrc.channels() === 4) {
@@ -122,10 +122,10 @@ export function detectRingsByEllipseFit(warpSrc, opts = {}) {
         const rawEllipse = cv.fitEllipse(cnt);
         cnt.delete();
 
-        const ex = rawEllipse.center.x;
-        const ey = rawEllipse.center.y;
-        const ew = rawEllipse.size.width;
-        const eh = rawEllipse.size.height;
+        const ex = Math.round(rawEllipse.center.x);
+        const ey = Math.round(rawEllipse.center.y);
+        const ew = Math.round(rawEllipse.size.width);
+        const eh = Math.round(rawEllipse.size.height);
 
         const dx = ex - cx;
         const dy = ey - cy;
@@ -138,9 +138,9 @@ export function detectRingsByEllipseFit(warpSrc, opts = {}) {
 
 
         candidates.push({
-        center: { x: ex, y: ey },
-        size:   { width: ew, height: eh },
-        angle: rawEllipse.angle
+            center: { x: ex, y: ey },
+            size:   { width: ew, height: eh },
+            angle: rawEllipse.angle
         });
     }
     contours.delete();
