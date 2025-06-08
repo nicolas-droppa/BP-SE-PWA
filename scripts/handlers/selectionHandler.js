@@ -55,7 +55,7 @@ function updatePointsUI() {
 
         const values = document.createElement("div");
         values.classList.add("point-values");
-        values.textContent = `9.8`;
+        values.textContent = `${score}`;
         right.appendChild(values);
 
         const del = document.createElement("i");
