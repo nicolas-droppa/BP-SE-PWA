@@ -47,6 +47,14 @@ require __DIR__ . '/layouts/navigation.php';
             <div class="current-points">
                 
             </div>
+
+            <div class="brush-control">
+                <label for="brushSize">
+                    Brush size: <span id="brushSizeValue">5</span>px
+                </label>
+                <input type="range" id="brushSize" min="1" max="50" value="5"/>
+            </div>
+
             <div class="buttons">
                 <button id="undoBtn">
                     <i class="fa-solid fa-arrow-rotate-left"></i> Undo

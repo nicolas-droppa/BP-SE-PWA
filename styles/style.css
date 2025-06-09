@@ -257,6 +257,27 @@ h2 {
 
 .current-points {
     width: 100%;
+    max-height: 80%;
+    background-color: rgba(93, 54, 54, 0.644);
+    padding-right: .5rem;
+}
+
+.brush-control {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.brush-control label {
+    font-size: .8rem;
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+.brush-control input[type="range"] {
+    flex: 1;
+    cursor: pointer;
 }
 
 .current-points .point-item {

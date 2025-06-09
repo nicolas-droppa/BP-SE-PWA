@@ -16,7 +16,20 @@ let redoStack = [];
 let mouseX = 0;
 let mouseY = 0;
 
-const previewRadius = 5;
+let previewRadius = 5;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const brushSlider       = document.getElementById("brushSize");
+    const brushValueDisplay = document.getElementById("brushSizeValue");
+
+    brushValueDisplay.textContent = brushSlider.value;
+    previewRadius = Number(brushSlider.value);
+
+    brushSlider.addEventListener("input", (e) => {
+        previewRadius = Number(e.target.value);
+        brushValueDisplay.textContent = e.target.value;
+    });
+});
 
 function updatePointsUI() {
     currentPointsContainer.innerHTML = "";
@@ -85,7 +98,7 @@ function drawAll() {
     }
 
     for (let pt of points)
-        drawCircle(pt.x, pt.y, 5, "red", true);
+        drawCircle(pt.x, pt.y, pt.r, "red", true);
 
     drawCircle(mouseX, mouseY, previewRadius, "white", false);
 }
@@ -114,9 +127,9 @@ canvas.addEventListener("mousemove", (e) => {
 });
 
 canvas.addEventListener("click", (e) => {
-    points.push({ x: mouseX, y: mouseY });
+    points.push({ x: mouseX, y: mouseY, r: previewRadius });
     redoStack = [];
-    console.log(`Clicked at: x=${mouseX.toFixed(0)}, y=${mouseY.toFixed(0)}`);
+    console.log(`Clicked at: x=${mouseX.toFixed(0)}, y=${mouseY.toFixed(0)}, r=${previewRadius}`);
     drawAll();
     updatePointsUI();
 });
