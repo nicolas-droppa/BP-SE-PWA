@@ -1,4 +1,4 @@
-import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE } from "./_constants.js";
+import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE, MANUAL_CORNER_SELECTION } from "./_constants.js";
 /*import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";*/
 import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
 import { completeManualSelection } from "./handlers/selectionHandler.js";
@@ -30,7 +30,8 @@ function onOpenCvReady() {
 }
 
 function openFileInput(e) {
-    if (uploadDisabled) return;
+    if (uploadDisabled) 
+        return;
     document.getElementById("fileInput").click();
 }
 
@@ -79,6 +80,7 @@ function onFileUpload(event) {
     let warpedImage = null;
 
     const continueWithWarpedImage = (warpSrc) => {
+        //console.log(cv.getBuildInformation());
         const centroid = computeContentCentroid(warpSrc);
         console.log("cc: ", centroid);
         cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
@@ -116,7 +118,7 @@ function onFileUpload(event) {
         console.log("✅ Upload done, rings detected, click disabled.");
     };
 
-    if (corners == null) {
+    if (corners == null || MANUAL_CORNER_SELECTION) {
         console.log("❌ Automatic detection failed. Switching to manual corner selection...");
 
         document.getElementById("loadingSpinner").style.display = "none";

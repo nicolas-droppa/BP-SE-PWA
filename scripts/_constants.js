@@ -24,3 +24,10 @@ export const COLOR_RED = [255, 0, 0, 255];
  * value that is added in target roi, for extra safe meassures in case of wrong detection
  */
 export const TARGET_MARGIN_ROI_PIXELS = 50;
+
+/** MANUAL CORNER SELECTION
+ * value based on which are corners selected
+ * True -> manual
+ * False -> automatic
+ */
+export const MANUAL_CORNER_SELECTION = false;
