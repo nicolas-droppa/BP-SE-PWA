@@ -11,6 +11,8 @@ $uri = rtrim($uri, '/');
 
 if ($uri == '' || $uri == '/myAimBuddy') {
     require __DIR__ . '/app/Views/home.php';
+} elseif ($uri == '/myAimBuddy/about') {
+    require __DIR__ . '/app/Views/about.php';
 } elseif ($uri == '/shots/create' && $method == 'POST') {
     // Handle AJAX or form POST to save a new shot
     $controller = new ShotController();
