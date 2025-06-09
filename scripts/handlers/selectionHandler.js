@@ -21,6 +21,16 @@ const previewRadius = 5;
 function updatePointsUI() {
     currentPointsContainer.innerHTML = "";
 
+    const countElem = document.createElement("div");
+    countElem.classList.add("point-count");
+    countElem.textContent = `Total points: ${points.length}`;
+    currentPointsContainer.appendChild(countElem);
+
+    if (points.length == 0)
+        countElem.classList.add("hidden");
+    else
+        countElem.classList.remove("hidden");
+
     points.forEach((point, i) => {
         const ellipse = window._currentEllipse;
         if (!ellipse) {
@@ -40,14 +50,6 @@ function updatePointsUI() {
         header.classList.add("point-header");
         header.textContent = `Point ${i + 1}`;
         details.appendChild(header);
-        
-        const xLine = document.createElement("div");
-        xLine.textContent = `x: ${point.x.toFixed(0)}`;
-        const yLine = document.createElement("div");
-        yLine.textContent = `y: ${point.y.toFixed(0)}`;
-        details.appendChild(xLine);
-        details.appendChild(yLine);
-
         
         const right = document.createElement("div");
         right.style.display = "flex";
@@ -72,6 +74,7 @@ function updatePointsUI() {
         currentPointsContainer.appendChild(item);
     });
 }
+
 
 function drawAll() {
     if (window._backgroundImage) {
