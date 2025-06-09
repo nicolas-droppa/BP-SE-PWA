@@ -156,7 +156,7 @@ export function detectCornersBinary(image) {
 
     let corners = approximateContourToPolygon(largestContour, image);
 
-    cv.imshow("targetRoiCanvas", image);
+    //cv.imshow("targetRoiCanvas", image);
     
     return [corners, image];
 }
@@ -212,7 +212,9 @@ export function findPaperCorners(originalImage, mask) {
     // cv.imshow("targetRoiCanvas", targetRoiImage);
 
     let data = detectCornersInMask(targetRoiImage);
-    //let data = detectCornersBinary(targetRoiImage);
+
+    if (data[0] == null)
+        data = detectCornersBinary(targetRoiImage);
 
     contours.delete();
     largestContour.delete();
