@@ -3,9 +3,10 @@
  * @param {{x:number,y:number}} clickPoint shot center coords
  * @param {{center:{x:number,y:number}, size:{width:number,height:number}, angle:number}} ellipse
  * @param {number} previewRadius radius of shot
+ * @param {boolean} shotInDecimal whether function returns decimal or whole number
  * @return {number} score
  */
-export function getScore(clickPoint, ellipse, previewRadius) {
+export function getScore(clickPoint, ellipse, previewRadius, shotInDecimal) {
     const MAX_SCORE = 10;
 
     const ringWidths = [0.6, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8];
@@ -22,16 +23,13 @@ export function getScore(clickPoint, ellipse, previewRadius) {
 
     const distance = Math.hypot(rotX, rotY);
 
-    const effectiveDistance = Math.max(0, distance - previewRadius);
+    const effectiveDistance = shotInDecimal ? distance : Math.max(0, distance - previewRadius);
 
     const unitX = rotX / (distance || 1);
     const unitY = rotY / (distance || 1);
     const halfWidth = ellipse.size.width / 2;
     const halfHeight = ellipse.size.height / 2;
-    const boundaryRadiusPx = 1 / Math.sqrt(
-        (unitX * unitX) / (halfWidth * halfWidth) +
-        (unitY * unitY) / (halfHeight * halfHeight)
-    );
+    const boundaryRadiusPx = 1 / Math.sqrt((unitX * unitX) / (halfWidth * halfWidth) + (unitY * unitY) / (halfHeight * halfHeight));
 
     const pxPerCm = boundaryRadiusPx / boundary;
     const effectiveDistanceCm = effectiveDistance / pxPerCm;
@@ -46,5 +44,17 @@ export function getScore(clickPoint, ellipse, previewRadius) {
     if (zoneIndex === -1) zoneIndex = ringWidths.length;
 
     const score = MAX_SCORE - zoneIndex;
+
+    if (shotInDecimal && score > 0 && zoneIndex < ringWidths.length) {
+        const innerBoundary = zoneIndex > 0 ? cumulativeBoundsCm[zoneIndex - 1] : 0;
+        const ringWidth = ringWidths[zoneIndex];
+
+        const intoRing = Math.min(ringWidth, Math.max(0, effectiveDistanceCm - innerBoundary));
+        const fraction = 1 - intoRing / ringWidth;
+
+        const digit = Math.min(9, Math.floor(fraction * 10));
+        return score + digit / 10;
+    }
+
     return Math.max(0, score);
 }

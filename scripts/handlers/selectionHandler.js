@@ -10,6 +10,8 @@ const currentPointsContainer = document.querySelector(".current-points");
 
 canvas.style.cursor = "none";
 
+let shotInDecimal = false;
+
 export let points = [];
 let redoStack = [];
 
@@ -30,10 +32,14 @@ function setActive(target) {
 
 wholeBtn.addEventListener("click", () => {
     setActive(wholeBtn);
+    shotInDecimal = false;
+    updatePointsUI();
 });
 
 decimalBtn.addEventListener("click", () => {
     setActive(decimalBtn);
+    shotInDecimal = true;
+    updatePointsUI();
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -75,7 +81,7 @@ function updatePointsUI() {
             return;
         }
 
-        const score = getScore(point, ellipse, previewRadius);
+        const score = getScore(point, ellipse, previewRadius, shotInDecimal);
         console.log("Score:", score);
 
         const item = document.createElement("div");
