@@ -1,6 +1,6 @@
 /**
  * Takes a cv.Mat (warped RGBA/RGB)
- * returns { x: cx, y: cy } = centroid of largest non-blank space.
+ * @returns { x: cx, y: cy } = centroid of largest non-blank space.
  */
 export function computeContentCentroid(warpedMat) {
     let gray = new cv.Mat();

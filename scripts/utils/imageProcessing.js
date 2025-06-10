@@ -4,8 +4,8 @@ import { orderPoints, calculateWidthHeight, scaleQuadrilateralToWidth } from "./
 
 /**
  * Finds contours in the image
- * 
  * @param {cv.Mat} image - image used for contour detection
+ * 
  * @returns {cv.MatVector} - The contours
  */
 export function findContours(image) {
@@ -22,8 +22,8 @@ export function findContours(image) {
 
 /**
  * Returns the largest contour
- * 
  * @param {cv.MatVector} contours - List of contours
+ * 
  * @returns {cv.Mat} - Largest contour
  */
 export function getLargestContour(contours) {
@@ -44,7 +44,6 @@ export function getLargestContour(contours) {
 
 /**
  * Draws the largest contour on the image with a bounding box
- * 
  * @param {cv.Mat} image - Input image
  * @param {cv.MatVector} contours - List of contours
  * @param {cv.Scalar} color - Color of bounding box
@@ -69,6 +68,7 @@ export function markLargestContour(image, contours, color, thickness) {
  * Based on largest contour creates target's roi
  * @param {cv.Mat} image - Input image
  * @param {cv.MatVector} contours - List of contours
+ * 
  * @returns {cv.Mat} - TargetROI image matrix
  */
 export function getTargetRegionOfInterest(image, contours) {
