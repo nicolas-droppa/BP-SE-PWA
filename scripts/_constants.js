@@ -30,4 +30,4 @@ export const TARGET_MARGIN_ROI_PIXELS = 50;
  * True -> manual
  * False -> automatic
  */
-export const MANUAL_CORNER_SELECTION = false;
+export const MANUAL_CORNER_SELECTION = true;

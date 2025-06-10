@@ -196,7 +196,7 @@ function updatePointsUI() {
 
 
 function drawAll() {
-    if (window._backgroundImage) {
+    if (window._backgroundImage && window._backgroundImageNoEllipse) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         window._ellipseVisible ? ctx.drawImage(window._backgroundImage, 0, 0) : ctx.drawImage(window._backgroundImageNoEllipse, 0, 0);
     } else {

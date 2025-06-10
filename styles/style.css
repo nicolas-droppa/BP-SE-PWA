@@ -27,8 +27,6 @@
     --color-change-red-hover: #c03737;
     --color-change-green-hover: #37bf4d;
     --color-change-purple-hover: #8236b2;
-
-    --color-button-background: #f4f0f0;
 }
 
 * {
@@ -487,7 +485,7 @@ h2 {
 button {
     padding: 0.5rem 1rem;
     border: none;
-    background-color: var(--color-button-background);
+    background-color: var(--color-main);
     border-radius: 0.375rem;
     font-size: .8rem;
     cursor: pointer;

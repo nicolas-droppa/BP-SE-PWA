@@ -134,6 +134,7 @@ function onFileUpload(event) {
         warpedImage = image.clone();
         cv.imshow("warpCanvas", warpedImage);
         saveImageToCanvas(warpCanvas);
+        saveImageToCanvasNoEllipse(warpCanvas);
 
         const doneBtn = document.createElement("button");
         doneBtn.textContent = "Done";
