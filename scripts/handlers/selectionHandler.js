@@ -17,10 +17,15 @@ let mouseX = 0;
 let mouseY = 0;
 
 let previewRadius = 5;
+let brushSlider, brushValueDisplay;
+let minPreviewRadius, maxPreviewRadius;
 
 document.addEventListener("DOMContentLoaded", () => {
-    const brushSlider       = document.getElementById("brushSize");
-    const brushValueDisplay = document.getElementById("brushSizeValue");
+    brushSlider = document.getElementById("brushSize");
+    brushValueDisplay = document.getElementById("brushSizeValue");
+
+    minPreviewRadius = Number(brushSlider.min);
+    maxPreviewRadius = Number(brushSlider.max);
 
     brushValueDisplay.textContent = brushSlider.value;
     previewRadius = Number(brushSlider.value);
@@ -28,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     brushSlider.addEventListener("input", (e) => {
         previewRadius = Number(e.target.value);
         brushValueDisplay.textContent = e.target.value;
+        drawAll();
     });
 });
 
@@ -134,6 +140,31 @@ canvas.addEventListener("click", (e) => {
     updatePointsUI();
 });
 
+function updateBrushUI() {
+    brushSlider.value = previewRadius;
+    brushValueDisplay.textContent = previewRadius;
+    drawAll();
+}
+
+// Brush Size UP / Size DOWN
+function sizeUp(jump) {
+    if (jump)
+        previewRadius = Math.min(maxPreviewRadius, previewRadius + 5);
+    else
+        previewRadius = Math.min(maxPreviewRadius, previewRadius + 1);
+
+    updateBrushUI();
+}
+
+function sizeDown(jump) {
+    if (jump)
+        previewRadius = Math.max(minPreviewRadius, previewRadius - 5);
+    else
+        previewRadius = Math.max(minPreviewRadius, previewRadius - 1);
+
+    updateBrushUI();
+}
+
 // Undo / Redo
 function undo() {
     if (points.length) {
@@ -168,13 +199,40 @@ document.getElementById("resetBtn").addEventListener("click", newImage);
 
 // Keyboard shortcuts
 window.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.key === "z") {
+    const tag = e.target.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA") 
+        return;
+
+    if (e.ctrlKey && e.key.toLowerCase() === "z") {
         e.preventDefault();
         undo();
+        return;
     }
-    if (e.ctrlKey && e.key === "y") {
+    if (e.ctrlKey && e.key.toLowerCase() === "y") {
         e.preventDefault();
         redo();
+        return;
+    }
+
+    if (e.shiftKey && e.key.toLowerCase() === "w") {
+        e.preventDefault();
+        sizeUp(true);
+        return;
+    }
+    if (e.shiftKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        sizeDown(true);
+        return;
+    }
+    if (e.key.toLowerCase() === "w") {
+        e.preventDefault();
+        sizeUp(false);
+        return;
+    }
+    if (e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        sizeDown(false);
+        return;
     }
 });
 
