@@ -23,6 +23,36 @@ let previewRadius = 5;
 let brushSlider, brushValueDisplay;
 let minPreviewRadius, maxPreviewRadius;
 
+let isSelectingEllipse = false;
+let manualEllipsePoints = [];
+
+const hideEllipseBtn = document.getElementById("hideEllipseBtn");
+hideEllipseBtn.addEventListener("click", () => {
+    if (!window._backgroundImageNoEllipse) 
+        return;
+
+    changeEllipseVisibility();
+});
+
+function changeEllipseVisibility() {
+    window._ellipseVisible ? hideEllipseBtn.querySelector("i").classList.replace("fa-eye-slash", "fa-eye") : hideEllipseBtn.querySelector("i").classList.replace("fa-eye", "fa-eye-slash");
+    window._ellipseVisible = !window._ellipseVisible;
+    drawAll();
+}
+
+const newEllipseBtn = document.getElementById("redoEllipseBtn");
+newEllipseBtn.addEventListener("click", () => {
+    if (!window._backgroundImageNoEllipse) 
+        return;
+
+    window._ellipseVisible = false;
+
+    isSelectingEllipse = true;
+    manualEllipsePoints = [];
+    canvas.style.cursor = "crosshair";
+});
+
+
 const wholeBtn = document.getElementById("wholeBtn");
 const decimalBtn = document.getElementById("decimalBtn");
 const buttons = [wholeBtn, decimalBtn];
@@ -102,6 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
         drawAll();
     });
 
+    changeEllipseVisibility();
+
     setActive(wholeBtn);
 });
 
@@ -166,13 +198,20 @@ function updatePointsUI() {
 function drawAll() {
     if (window._backgroundImage) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(window._backgroundImage, 0, 0);
+        window._ellipseVisible ? ctx.drawImage(window._backgroundImage, 0, 0) : ctx.drawImage(window._backgroundImageNoEllipse, 0, 0);
     } else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     for (let pt of points)
         drawCircle(pt.x, pt.y, pt.r, previewColor, true);
+
+    if (isSelectingEllipse) {
+        for (let ptE of manualEllipsePoints)
+            drawCircle(ptE.x, ptE.y, 3, 'rgba(255,0,0,1)', true);
+
+        return;
+    }
 
     drawCircle(mouseX, mouseY, previewRadius, previewColor, true);
 }
@@ -201,6 +240,54 @@ canvas.addEventListener("mousemove", (e) => {
 });
 
 canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (canvas.width  / rect.width);
+    const y = (e.clientY - rect.top ) * (canvas.height / rect.height);
+
+    if (isSelectingEllipse) {
+        manualEllipsePoints.push({ x, y });
+
+        if (manualEllipsePoints.length === 4) {
+            canvas.style.cursor = "none";
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(window._backgroundImageNoEllipse, 0, 0);
+
+            isSelectingEllipse = false;
+
+            const pts = manualEllipsePoints;
+            const data = pts.flatMap(p => [p.x, p.y]).concat([pts[0].x, pts[0].y]);
+
+            const ptsMat = cv.matFromArray(5, 1, cv.CV_32SC2, data);
+            const rotatedRect = cv.fitEllipse(ptsMat);
+            ptsMat.delete();
+
+            window._currentEllipse = rotatedRect;
+            window._ellipseVisible = true;
+
+            let srcMat  = cv.imread(canvas);
+            let overlay = srcMat.clone();
+            cv.ellipse(
+                overlay,
+                new cv.Point(rotatedRect.center.x, rotatedRect.center.y),
+                new cv.Size(rotatedRect.size.width/2, rotatedRect.size.height/2),
+                rotatedRect.angle,
+                0, 360,
+                new cv.Scalar(255, 76, 76, 255),
+                2, cv.LINE_AA
+            );
+            cv.addWeighted(overlay, 0.35, srcMat, 0.65, 0, srcMat);
+            cv.imshow(canvas, srcMat);
+            overlay.delete(); srcMat.delete();
+
+            saveImageToCanvas(canvas);
+            updatePointsUI();
+            drawAll();
+        }
+
+        return;
+    }
+
     points.push({ x: mouseX, y: mouseY, r: previewRadius });
     redoStack = [];
     console.log(`Clicked at: x=${mouseX.toFixed(0)}, y=${mouseY.toFixed(0)}, r=${previewRadius}`);
@@ -308,10 +395,15 @@ window.addEventListener("keydown", (e) => {
         currentColorIndex = setActiveColorByIndex(currentColorIndex - 1);
         return;
     }
-
     if (e.key.toLowerCase() === "e") {
         e.preventDefault();
         currentColorIndex = setActiveColorByIndex(currentColorIndex + 1);
+        return;
+    }
+
+    if (e.key.toLowerCase() === "v") {
+        e.preventDefault();
+        changeEllipseVisibility();
         return;
     }
 });

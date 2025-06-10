@@ -27,6 +27,8 @@
     --color-change-red-hover: #c03737;
     --color-change-green-hover: #37bf4d;
     --color-change-purple-hover: #8236b2;
+
+    --color-button-background: #f4f0f0;
 }
 
 * {
@@ -269,6 +271,7 @@ h2 {
     margin-top: 0;
     width: 100%;
     padding-top: .5rem;
+    padding-bottom: .5rem;
     border-top: .0625rem solid var(--color-box-hover);
 }
 
@@ -303,6 +306,31 @@ h2 {
 
 .control-panel .decimal-control button:hover{
     background-color: var(--color-accent-hover);
+}
+
+.control-panel .ellipse-control {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    align-self: center;
+    padding-top: 1rem;
+    border-top: .0625rem solid var(--color-box-hover);
+}
+
+.control-panel .ellipse-control button{
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: var(--color-main);
+    border-radius: 0.375rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.control-panel .ellipse-control button:hover {
+    background: var(--color-border);
 }
 
 .control-panel .color-control {
@@ -459,7 +487,7 @@ h2 {
 button {
     padding: 0.5rem 1rem;
     border: none;
-    background-color: var(--color-main);
+    background-color: var(--color-button-background);
     border-radius: 0.375rem;
     font-size: .8rem;
     cursor: pointer;

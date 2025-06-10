@@ -78,6 +78,16 @@ require __DIR__ . '/layouts/navigation.php';
                     <i class="fa-solid fa-arrow-rotate-right"></i> Redo
                 </button>
             </div>
+
+            <div class="ellipse-control">
+                <button id="redoEllipseBtn">
+                    <i class="fa-regular fa-circle"></i> New Ellipse
+                </button>
+                <button id="hideEllipseBtn">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+            
             <button id="doneSelectionBtn" style="display: none;">Done</button>
         </div>
     </div>

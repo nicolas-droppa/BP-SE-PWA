@@ -8,8 +8,6 @@ import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianB
 
 /*import { func } from "./utils/autoDetectionScript.js"; Postponed for later... */
 
-window._currentEllipse = null;
-
 document.addEventListener("DOMContentLoaded", function () {
     if (cv.getBuildInformation) {
         onOpenCvReady();
@@ -82,8 +80,11 @@ function onFileUpload(event) {
     const continueWithWarpedImage = (warpSrc) => {
         //console.log(cv.getBuildInformation());
         const centroid = computeContentCentroid(warpSrc);
-        console.log("cc: ", centroid);
-        cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
+        //console.log("cc: ", centroid);
+        //cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
+
+        cv.imshow("warpCanvas", warpSrc);
+        saveImageToCanvasNoEllipse(warpCanvas);
 
         const ellipse = detectRingsByEllipseFit(warpSrc, {
             threshold:          100,
@@ -101,10 +102,15 @@ function onFileUpload(event) {
         const ay = ellipse[0].size.height / 2;
         const angle = ellipse[0].angle;
 
-        cv.ellipse(warpSrc, new cv.Point(ex, ey), new cv.Size(ax, ay), angle, 0, 360, [255, 0, 0, 255], 2);
+        let overlay = warpSrc.clone();
+        cv.ellipse( overlay, new cv.Point(ex, ey), new cv.Size(ax, ay), angle, 0, 360, new cv.Scalar(255, 76, 76, 255), 2, cv.LINE_AA);
+
+        const alpha = 0.35;
+        cv.addWeighted( overlay, alpha, warpSrc, 1 - alpha, 0, warpSrc);
+
+        overlay.delete();
 
         window._currentEllipse = ellipse[0];
-
 
         let hsvImageNew = convertToHSV(warpSrc);
 
@@ -112,6 +118,7 @@ function onFileUpload(event) {
         hsvImageNew.delete();
 
         saveImageToCanvas(warpCanvas);
+        window._ellipseVisible = true;
         warpSrc.delete();
 
         uploadDisabled = true;
@@ -174,6 +181,15 @@ export function saveImageToCanvas(canvas) {
     window._backgroundImage = savedCanvas;
 }
 
+export function saveImageToCanvasNoEllipse(canvas) {
+    const savedCanvas = document.createElement("canvas");
+    savedCanvas.width = canvas.width;
+    savedCanvas.height = canvas.height;
+    const savedCtx = savedCanvas.getContext("2d");
+    savedCtx.drawImage(canvas, 0, 0);
+    window._backgroundImageNoEllipse = savedCanvas;
+}
+
 function checkOpenCv() {
     if (typeof cv !== "undefined" && cv.onRuntimeInitialized) {
         console.log("✅ OpenCV.js script found!");
@@ -208,6 +224,8 @@ export function resetApp() {
 
     delete window._backgroundImage;
     delete window._currentEllipse;
+    delete window._backgroundImageNoEllipse;
+    delete window._ellipseVisible;
 
     uploadDisabled = false;
 }
