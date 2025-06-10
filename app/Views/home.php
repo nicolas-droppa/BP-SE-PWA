@@ -57,6 +57,12 @@ require __DIR__ . '/layouts/navigation.php';
                 </button>
             </div>
 
+            <div class="color-control">
+                <button class="color-btn" id="defaultColor" data-color="green" aria-label="Green"></button>
+                <button class="color-btn" data-color="purple" aria-label="Purple"></button>
+                <button class="color-btn" data-color="red" aria-label="Red"></button>
+            </div>
+
             <div class="brush-control">
                 <label for="brushSize">
                     <span id="brushSizeValue">5</span>

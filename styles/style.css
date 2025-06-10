@@ -20,6 +20,13 @@
     --color-success: #5eff4c;
     --color-alert: #ff4c4c;
     --color-danger: #fff34c;
+
+    --color-change-red: #ff4c4c;
+    --color-change-green: #4cff6a;
+    --color-change-purple: #ba4cff;
+    --color-change-red-hover: #c03737;
+    --color-change-green-hover: #37bf4d;
+    --color-change-purple-hover: #8236b2;
 }
 
 * {
@@ -54,6 +61,10 @@ body {
 .active-btn {
     background-color: var(--color-accent)!important;
     color: var(--color-text-white)!important;
+}
+
+.active-color-btn {
+    transform: scale(.75);
 }
 
 /* navbar */
@@ -268,6 +279,8 @@ h2 {
 }
 
 .control-panel .decimal-control {
+    width: 100%;
+    justify-content: center;
     display: flex;
     align-items: center;
     gap: .75rem;
@@ -291,6 +304,35 @@ h2 {
 .control-panel .decimal-control button:hover{
     background-color: var(--color-accent-hover);
 }
+
+.control-panel .color-control {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1rem;
+    align-self: center;
+    padding-top: 1rem;
+    border-top: .0625rem solid var(--color-box-hover);
+}
+
+.control-panel .color-control button{
+    width: 1.5rem;
+    height: 1.5rem;
+    border: .125rem solid var(--color-box-border);
+    border-radius: .2rem;
+    box-shadow: 0 1px 3px var(--color-shadow);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.color-btn[data-color="red"] { background-color: var(--color-change-red); }
+.color-btn[data-color="green"] { background-color: var(--color-change-green); }
+.color-btn[data-color="purple"] { background-color: var(--color-change-purple); }
+.color-btn[data-color="red"]:hover { background-color: var(--color-change-red-hover); }
+.color-btn[data-color="green"]:hover { background-color: var(--color-change-green-hover); }
+.color-btn[data-color="purple"]:hover { background-color: var(--color-change-purple-hover); }
 
 .control-panel .brush-control {
     display: flex;

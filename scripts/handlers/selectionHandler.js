@@ -18,6 +18,7 @@ let redoStack = [];
 let mouseX = 0;
 let mouseY = 0;
 
+let previewColor = "rgba(76, 255, 106, .4)";
 let previewRadius = 5;
 let brushSlider, brushValueDisplay;
 let minPreviewRadius, maxPreviewRadius;
@@ -41,6 +42,49 @@ decimalBtn.addEventListener("click", () => {
     shotInDecimal = true;
     updatePointsUI();
 });
+
+const colorButtons = document.querySelectorAll('.color-btn');
+document.getElementById('defaultColor').classList.add('active-color-btn');
+
+colorButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        colorButtons.forEach(b => b.classList.remove('active-color-btn'));
+
+        btn.classList.add('active-color-btn');
+
+        switch (btn.dataset.color) {
+        case 'purple':
+            previewColor = 'rgba(186, 76, 255, .4)';
+            break;
+        case 'red':
+            previewColor = 'rgba(255, 76, 76, .4)';
+            break;
+        case 'green':
+            previewColor = 'rgba(76, 255, 106, .4)';
+            break;
+        default:
+            previewColor = 'rgba(186, 76, 255, .4)';
+        }
+        drawAll();
+    });
+});
+
+const colorButtonsArray = Array.from(document.querySelectorAll('.color-btn'));
+function setActiveColorByIndex(idx) {
+    const i = (idx + colorButtonsArray.length) % colorButtonsArray.length;
+
+    colorButtonsArray.forEach(b => b.classList.remove('active-color-btn'));
+    const btn = colorButtonsArray[i];
+    btn.classList.add('active-color-btn');
+
+    btn.click();
+
+    return i;
+}
+
+let currentColorIndex = colorButtonsArray.findIndex(b =>b.classList.contains('active-color-btn'));
+
+if (currentColorIndex < 0) currentColorIndex = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
     brushSlider = document.getElementById("brushSize");
@@ -128,9 +172,9 @@ function drawAll() {
     }
 
     for (let pt of points)
-        drawCircle(pt.x, pt.y, pt.r, "red", true);
+        drawCircle(pt.x, pt.y, pt.r, previewColor, true);
 
-    drawCircle(mouseX, mouseY, previewRadius, "white", false);
+    drawCircle(mouseX, mouseY, previewRadius, previewColor, true);
 }
 
 function drawCircle(x, y, radius, color, fill) {
@@ -256,6 +300,18 @@ window.addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() === "s") {
         e.preventDefault();
         sizeDown(false);
+        return;
+    }
+
+    if (e.key.toLowerCase() === "q") {
+        e.preventDefault();
+        currentColorIndex = setActiveColorByIndex(currentColorIndex - 1);
+        return;
+    }
+
+    if (e.key.toLowerCase() === "e") {
+        e.preventDefault();
+        currentColorIndex = setActiveColorByIndex(currentColorIndex + 1);
         return;
     }
 });
