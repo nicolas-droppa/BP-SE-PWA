@@ -258,9 +258,8 @@ h2 {
 
 .current-points {
     width: 100%;
-    max-height: 80%;
-    background-color: rgba(93, 54, 54, 0.644);
-    padding-right: .5rem;
+    overflow-y: scroll;
+    /* margin-right: .5rem; */
 }
 
 .control-panel .brush-control {
@@ -351,6 +350,7 @@ h2 {
     color: var(--color-main);
     padding: .2rem .5rem .2rem .5rem;
     border-radius: .25rem;
+    margin-top: .5rem;
 }
 
 .current-points .point-header {
