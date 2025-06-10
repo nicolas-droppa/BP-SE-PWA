@@ -50,7 +50,7 @@ require __DIR__ . '/layouts/navigation.php';
 
             <div class="brush-control">
                 <label for="brushSize">
-                    Brush size: <span id="brushSizeValue">5</span>px
+                    <span id="brushSizeValue">5</span>
                 </label>
                 <input type="range" id="brushSize" min="1" max="50" value="5"/>
             </div>
