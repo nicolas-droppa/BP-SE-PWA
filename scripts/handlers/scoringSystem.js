@@ -1,35 +1,50 @@
 /**
- * Calculates and returns score for shot 
- * @param {{x:number,y:number}} clickPoint shot coords
- * @param {{center:{x:number,y:number}, size:{width:number,height:number}, angle:number}} ellipse edge of darg circle
+ * Calculates and returns score for shot (accounting for shot radius)
+ * @param {{x:number,y:number}} clickPoint shot center coords
+ * @param {{center:{x:number,y:number}, size:{width:number,height:number}, angle:number}} ellipse
+ * @param {number} previewRadius radius of shot
+ * @return {number} score
  */
-export function getScore(clickPoint, ellipse) {
-    const maxZones = 10;
+export function getScore(clickPoint, ellipse, previewRadius) {
+    const MAX_SCORE = 10;
 
-    const dx = clickPoint.x - ellipse.center.x;
-    const dy = clickPoint.y - ellipse.center.y;
+    const ringWidths = [0.6, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8];
+    const boundary = ringWidths.slice(0, 4).reduce((sum, w) => sum + w, 0);
 
-    const θ = -ellipse.angle * Math.PI/180;
-    const c = Math.cos(θ), s = Math.sin(θ);
-    const xRot = dx*c - dy*s;
-    const yRot = dx*s + dy*c;
+    const deltaX = clickPoint.x - ellipse.center.x;
+    const deltaY = clickPoint.y - ellipse.center.y;
 
-    const dist = Math.hypot(xRot, yRot);
-    if (dist === 0) return maxZones;
+    const radians = -ellipse.angle * Math.PI / 180;
+    const cos = Math.cos(radians);
+    const sin = Math.sin(radians);
+    const rotX = deltaX * cos - deltaY * sin;
+    const rotY = deltaX * sin + deltaY * cos;
 
-    const ux = xRot/dist;
-    const uy = yRot/dist;
+    const distance = Math.hypot(rotX, rotY);
 
-    const ax = ellipse.size.width / 2;
-    const ay = ellipse.size.height / 2;
+    const effectiveDistance = Math.max(0, distance - previewRadius);
 
-    const rEdge = 1 / Math.sqrt((ux*ux)/(ax*ax) + (uy*uy)/(ay*ay));
+    const unitX = rotX / (distance || 1);
+    const unitY = rotY / (distance || 1);
+    const halfWidth = ellipse.size.width / 2;
+    const halfHeight = ellipse.size.height / 2;
+    const boundaryRadiusPx = 1 / Math.sqrt(
+        (unitX * unitX) / (halfWidth * halfWidth) +
+        (unitY * unitY) / (halfHeight * halfHeight)
+    );
 
-    const ringSize = rEdge / 4;
+    const pxPerCm = boundaryRadiusPx / boundary;
+    const effectiveDistanceCm = effectiveDistance / pxPerCm;
 
-    const ringIdx = Math.ceil(dist / ringSize);
+    const cumulativeBoundsCm = ringWidths.reduce((bounds, widthCm) => {
+        const lastBoundary = bounds.length ? bounds[bounds.length - 1] : 0;
+        bounds.push(lastBoundary + widthCm);
+        return bounds;
+    }, []);
 
-    const score = maxZones - (ringIdx - 1);
+    let zoneIndex = cumulativeBoundsCm.findIndex(boundary => effectiveDistanceCm <= boundary);
+    if (zoneIndex === -1) zoneIndex = ringWidths.length;
 
-    return score > 0 ? score : 0;
+    const score = MAX_SCORE - zoneIndex;
+    return Math.max(0, score);
 }

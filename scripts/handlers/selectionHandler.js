@@ -20,6 +20,22 @@ let previewRadius = 5;
 let brushSlider, brushValueDisplay;
 let minPreviewRadius, maxPreviewRadius;
 
+const wholeBtn = document.getElementById("wholeBtn");
+const decimalBtn = document.getElementById("decimalBtn");
+const buttons = [wholeBtn, decimalBtn];
+
+function setActive(target) {
+    buttons.forEach(btn => btn.classList.toggle("active-btn", btn === target));
+}
+
+wholeBtn.addEventListener("click", () => {
+    setActive(wholeBtn);
+});
+
+decimalBtn.addEventListener("click", () => {
+    setActive(decimalBtn);
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     brushSlider = document.getElementById("brushSize");
     brushValueDisplay = document.getElementById("brushSizeValue");
@@ -35,6 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
         brushValueDisplay.textContent = e.target.value;
         drawAll();
     });
+
+    setActive(wholeBtn);
 });
 
 function updatePointsUI() {
@@ -57,7 +75,7 @@ function updatePointsUI() {
             return;
         }
 
-        const score = getScore(point, ellipse);
+        const score = getScore(point, ellipse, previewRadius);
         console.log("Score:", score);
 
         const item = document.createElement("div");

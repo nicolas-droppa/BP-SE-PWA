@@ -48,6 +48,15 @@ require __DIR__ . '/layouts/navigation.php';
                 
             </div>
 
+            <div class="decimal-control">
+                <button id="wholeBtn">
+                    WHOLE
+                </button>
+                <button id="decimalBtn">
+                    DECIMAL
+                </button>
+            </div>
+
             <div class="brush-control">
                 <label for="brushSize">
                     <span id="brushSizeValue">5</span>

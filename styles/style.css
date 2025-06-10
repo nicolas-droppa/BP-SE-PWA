@@ -51,6 +51,11 @@ body {
     display: none!important;
 }
 
+.active-btn {
+    background-color: var(--color-accent)!important;
+    color: var(--color-text-white)!important;
+}
+
 /* navbar */
 .navbar {
     position: sticky;
@@ -262,11 +267,35 @@ h2 {
     /* margin-right: .5rem; */
 }
 
-.control-panel .brush-control {
+.control-panel .decimal-control {
     display: flex;
     align-items: center;
     gap: .75rem;
     margin-top: auto;
+    margin-bottom: 1rem;
+    align-self: center;
+    padding-top: 1rem;
+    border-top: .0625rem solid var(--color-box-hover);
+}
+
+.control-panel .decimal-control button{
+    padding: 0.5rem 1rem;
+    border: none;
+    outline: .0625rem solid var(--color-accent);
+    border-radius: 0.2rem;
+    font-size: .65rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.control-panel .decimal-control button:hover{
+    background-color: var(--color-accent-hover);
+}
+
+.control-panel .brush-control {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
     margin-bottom: 1rem;
     align-self: center;
     padding-top: 1rem;
