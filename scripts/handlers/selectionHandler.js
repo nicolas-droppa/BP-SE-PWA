@@ -3,6 +3,7 @@ import { saveImageToCanvas } from "../script.js";
 import { resetApp } from "../script.js";
 import { getScore } from './scoringSystem.js';
 import { showMessage } from "../utils/infoMessages.js";
+import { buildStatCubes } from "../utils/buildStatCubes.js";
 
 const canvas = document.getElementById("warpCanvas");
 const ctx = canvas.getContext("2d");
@@ -103,21 +104,7 @@ function updateStats() {
         }
     }
 
-    statArea.innerHTML = `
-        <h3>Statistics (mm, normalized)</h3>
-        <ul>
-        <li>Total shots: ${total}</li>
-        <li>Best score: ${best.toFixed(1)}</li>
-        <li>Worst score: ${worst.toFixed(1)}</li>
-        <li>Average score: ${avgScore.toFixed(2)}</li>
-        <li>Mean radius: ${meanRad.toFixed(2)} mm</li>
-        <li>Radius variance: ${variance.toFixed(2)} mm²</li>
-        <li>Consistency (MAD): ${mad.toFixed(2)} mm</li>
-        <li>Elevation: ${meanElev.toFixed(2)} mm</li>
-        <li>Windage: ${meanWind.toFixed(2)} mm</li>
-        <li>Max spread: ${maxSpread.toFixed(2)} mm</li>
-        </ul>
-    `;
+    buildStatCubes(statArea, total, best, worst, avgScore, meanRad, variance, mad, meanElev, meanWind, maxSpread);
 }
 
 let isSelectingEllipse = false;

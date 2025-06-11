@@ -505,6 +505,62 @@ button:hover {
     background-color: var(--color-accent-hover)!important;
 }
 
+.stat-area {
+    margin-top: 2rem;
+    width: 80vw;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background .3s ease, transform .2s ease;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.stat-cube {
+    position: relative;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    border-radius: .5rem;
+    box-shadow: 0 0 .5rem var(--color-shadow);
+    display: flex;
+    flex-direction: column;
+    transition: transform .2s ease;
+}
+
+.stat-cube:hover {
+    transform: translateY(-.25rem);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    font-weight: bold;
+    margin-bottom: .5rem;
+}
+
+.stat-label {
+    position: absolute;
+    font-size: .8rem;
+    color: var(--color-accent);
+    font-weight: 600;
+    top: .5rem;
+    left: .5rem;
+}
+
+.stat-desc {
+    font-size: .6rem;
+    color: var(--color-border);
+    text-align: left;
+}
+
 /* Footer */
 footer {
     text-align: center;
