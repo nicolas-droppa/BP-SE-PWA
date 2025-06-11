@@ -247,6 +247,7 @@ export function resetApp() {
     delete window._backgroundImageNoEllipse;
     window._ellipseVisible = false;
     window._noCorners = false;
+    window._pxPerMm = 0;
 
     uploadDisabled = false;
 }

@@ -24,6 +24,102 @@ let previewRadius = 5;
 let brushSlider, brushValueDisplay;
 let minPreviewRadius, maxPreviewRadius;
 
+const statArea = document.querySelector('.stat-area');
+function updateStats() {
+    const ellipse = window._currentEllipse;
+    if (!ellipse || points.length === 0) {
+        statArea.innerHTML = '';
+        return;
+    }
+
+    if (!window._pxPerMm) {
+        const ringWidthsCm = [0.6,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8];
+        const boundaryCm = ringWidthsCm.slice(0,4).reduce((sum,w)=>sum+w, 0);
+        const pxRadius = ellipse.size.width / 2;
+        const pxPerCm = pxRadius / boundaryCm;
+        window._pxPerMm = pxPerCm / 10;
+    }
+    const pxPerMm = window._pxPerMm;
+
+    const cx = ellipse.center.x;
+    const cy = ellipse.center.y;
+    const a = ellipse.size.width  / 2;
+    const b = ellipse.size.height / 2;
+    const angleR = -ellipse.angle * Math.PI/180;
+    const scaleY = a / b;
+
+    const data = points.map(pt => {
+        const dx = pt.x - cx;
+        const dy = pt.y - cy;
+        const ux = dx * Math.cos(angleR) - dy * Math.sin(angleR);
+        const uy = dx * Math.sin(angleR) + dy * Math.cos(angleR);
+        const vy = uy * scaleY;
+
+        const distNormPx = Math.hypot(ux, vy);
+
+        const distNormMm = distNormPx / pxPerMm;
+
+        const windageMm = ux / pxPerMm;
+        const elevationMm = vy / pxPerMm;
+        const score = getScore(pt, ellipse, previewRadius, shotInDecimal);
+        return { distNormMm, windageMm, elevationMm, score, ux, vy };
+    });
+
+    const total = data.length;
+
+    // Scores
+    const scores   = data.map(d => d.score);
+    const avgScore = scores.reduce((a,b)=>a+b,0)/total;
+    const best     = Math.max(...scores);
+    const worst    = Math.min(...scores);
+
+    // Radius stats
+    const radii    = data.map(d=>d.distNormMm);
+    const meanRad  = radii.reduce((a,b)=>a+b,0)/total;
+    const variance = radii.reduce((a,r)=>a + (r-meanRad)**2, 0)/total;
+    const mad      = radii.reduce((a,r)=>a + Math.abs(r-meanRad), 0)/total;
+
+    // Windage/Elevation
+    const meanWind = data.reduce((a,d)=>a + d.windageMm,   0)/total;
+    const meanElev = data.reduce((a,d)=>a + d.elevationMm, 0)/total;
+
+    // Max spread
+    let maxSpread = 0;
+    for (let i=0; i<total; i++) {
+        for (let j=i+1; j<total; j++) {
+            const d1 = points[i], d2 = points[j];
+
+            let dx = (d1.x - cx)*Math.cos(angleR) - (d1.y - cy)*Math.sin(angleR);
+            let dy = (d1.x - cx)*Math.sin(angleR) + (d1.y - cy)*Math.cos(angleR);
+            let x1 = dx, y1 = dy*scaleY;
+            dx = (d2.x - cx)*Math.cos(angleR) - (d2.y - cy)*Math.sin(angleR);
+            dy = (d2.x - cx)*Math.sin(angleR) + (d2.y - cy)*Math.cos(angleR);
+            let x2 = dx, y2 = dy*scaleY;
+
+            const ddPx = Math.hypot(x1-x2, y1-y2);
+            const ddMm = ddPx / pxPerMm;
+            if (ddMm > maxSpread) 
+                maxSpread = ddMm;
+        }
+    }
+
+    statArea.innerHTML = `
+        <h3>Statistics (mm, normalized)</h3>
+        <ul>
+        <li>Total shots: ${total}</li>
+        <li>Best score: ${best.toFixed(1)}</li>
+        <li>Worst score: ${worst.toFixed(1)}</li>
+        <li>Average score: ${avgScore.toFixed(2)}</li>
+        <li>Mean radius: ${meanRad.toFixed(2)} mm</li>
+        <li>Radius variance: ${variance.toFixed(2)} mm²</li>
+        <li>Consistency (MAD): ${mad.toFixed(2)} mm</li>
+        <li>Elevation: ${meanElev.toFixed(2)} mm</li>
+        <li>Windage: ${meanWind.toFixed(2)} mm</li>
+        <li>Max spread: ${maxSpread.toFixed(2)} mm</li>
+        </ul>
+    `;
+}
+
 let isSelectingEllipse = false;
 let manualEllipsePoints = [];
 
@@ -37,6 +133,7 @@ export function returnBrushToDefault() {
     points = [];
     redoStack = [];
     ellipseControlDiv.style.display = "flex";
+    window._pxPerMm = 0;
 }
 
 export function setBrushIfNoCorners() {
@@ -177,6 +274,8 @@ function updatePointsUI() {
     countElem.classList.add("point-count");
     countElem.textContent = `Total points: ${points.length}`;
     currentPointsContainer.appendChild(countElem);
+
+    updateStats();
 
     if (points.length == 0)
         countElem.classList.add("hidden");

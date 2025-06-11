@@ -103,5 +103,9 @@ require __DIR__ . '/layouts/navigation.php';
     <input type="file" id="fileInput" accept="image/*" hidden>
 </div>        
 
+<div class="stat-area">
+    
+</div>
+
 <?php
 require __DIR__ . '/layouts/footer.php';
