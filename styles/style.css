@@ -528,7 +528,7 @@ button:hover {
     align-items: center;
     text-align: center;
     padding: 1rem;
-    border-radius: .5rem;
+    border-radius: .35rem;
     box-shadow: 0 0 .5rem var(--color-shadow);
     display: flex;
     flex-direction: column;
@@ -536,7 +536,7 @@ button:hover {
 }
 
 .stat-cube:hover {
-    transform: translateY(-.25rem);
+    transform: translateY(-.2rem);
 }
 
 .stat-value {
