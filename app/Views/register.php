@@ -9,7 +9,85 @@ $includeScripts = [
 ];
 require __DIR__ . '/layouts/header.php';
 require __DIR__ . '/layouts/navigation.php';
+
+$flash = $_SESSION['flash'] ?? [];
+unset($_SESSION['flash']);
+
+$errors = $flash['errors'] ?? [];
+$oldValues = $flash['oldValues'] ?? [];
+
+$errors = [];
+$oldValues = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $oldValues['name'] = trim($_POST['name'] ?? '');
+    $oldValues['email'] = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
+
+    if ($oldValues['name'] === '') {
+        $errors['name'] = 'Please enter your name.';
+    }
+
+    if ($oldValues['email'] === '' || ! filter_var($oldValues['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Please enter a valid email address.';
+    }
+
+    if ($password === '') {
+        $errors['password'] = 'Please choose a password.';
+    } elseif (strlen($password) < 6) {
+        $errors['password'] = 'Password must be at least 6 characters.';
+    }
+
+    if ($confirmPassword !== $password) {
+        $errors['confirm_password'] = 'Passwords do not match.';
+    }
+
+    if (empty($errors)) {
+        try {
+            $stmt = $db->prepare('SELECT id FROM users WHERE email = :email');
+            $stmt->execute(['email' => $oldValues['email']]);
+            if ($stmt->fetch()) {
+                $errors['email'] = 'This email is already registered.';
+            } else {
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $query = $db->prepare(
+                    'INSERT INTO users (name, email, password) VALUES (:name, :email, :pasword)'
+                );
+                $query->execute([
+                    'name' => $oldValues['name'],
+                    'email' => $oldValues['email'],
+                    'pasword' => $hash,
+                ]);
+
+                $_SESSION['user_id'] = $db->lastInsertId();
+                $_SESSION['user_name'] = $oldValues['name'];
+
+                header('Location: /myAimBuddy/login');
+                exit;
+            }
+        } catch (PDOException $e) {
+            $errors['general'] = 'A database error occurred. Please try again later.';
+        }
+    }
+
+    $_SESSION['flash'] = [
+        'errors' => $errors,
+        'oldValues' => $oldValues,
+    ];
+
+    header('Location: /myAimBuddy/register');
+    exit;
+}
+
 ?>
+
+<div class="info-message success" id="globalMessage">
+    <div class="message">Placeholder text, testing messages…</div>
+    <button id="closeMessage">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
 
 <div class="register-page">
     <h2 class="title">Create Your Account</h2>

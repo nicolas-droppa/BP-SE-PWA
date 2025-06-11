@@ -120,6 +120,45 @@ body {
     text-decoration: underline;
 }
 
+.nav-links .dropdown {
+    position: relative;
+}
+
+.nav-links .dropdown > a::after {
+    content: ' ▼';
+    font-size: .7rem;
+    margin-left: .2rem;
+}
+
+.nav-links .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--color-main);
+    border: .0625rem solid var(--color-border);
+    border-radius: .2rem;
+    min-width: 10rem;
+    box-shadow: 0 2px 6px var(--color-shadow);
+    padding: .5rem 0;
+    list-style: none;
+    z-index: 9000;
+}
+
+.nav-links .dropdown-content a {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+}
+
+.nav-links .dropdown-content a:hover {
+    background: var(--color-border);
+}
+
+.nav-links .dropdown:hover .dropdown-content {
+    display: block;
+}
+
 /* Main container */
 .container {
     max-width: 100%;

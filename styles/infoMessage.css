@@ -22,7 +22,7 @@
     transition: visibility 0s linear .3s;
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: 10000;
+    z-index: 9500;
 }
 
 .info-message[style*="visibility: visible"] {

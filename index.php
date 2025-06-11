@@ -2,6 +2,7 @@
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/config.php';
+require __DIR__ . '/session.php';
 
 use App\Controllers\ShotController;
 
@@ -18,6 +19,10 @@ if ($uri == '' || $uri == '/myAimBuddy') {
     require __DIR__ . '/app/Views/register.php';
 } elseif ($uri == '/myAimBuddy/login') {
     require __DIR__ . '/app/Views/login.php';
+} elseif ($uri == '/myAimBuddy/logout') {
+    require __DIR__ . '/logout.php';
+} elseif ($uri == '/myAimBuddy/dashboard') {
+    require __DIR__ . '/dashboard.php';
 } elseif ($uri == '/shots/create' && $method == 'POST') {
     // Handle AJAX or form POST to save a new shot
     $controller = new ShotController();
