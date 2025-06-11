@@ -1,10 +1,9 @@
 <link rel="stylesheet" href="styles/register.css"/>
 
 <?php
-http_response_code(200);
 $pageTitle = 'MyAimBuddy | Register';
 $includeScripts = [
-    ['src' => './scripts/validators/validateRegister.js', 'module' => true],
+    ['src' => './scripts/validators/validateRegister.js', 'module' => false],
     ['src' => './scripts/design/navbar.js', 'module' => false],
     ['src' => './scripts/utils/infoMessages.js', 'module' => true],
 ];
