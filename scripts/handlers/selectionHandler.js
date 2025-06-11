@@ -2,6 +2,7 @@ import { warpPerspective } from "../utils/imageProcessing.js";
 import { saveImageToCanvas } from "../script.js";
 import { resetApp } from "../script.js";
 import { getScore } from './scoringSystem.js';
+import { showMessage } from "../utils/infoMessages.js";
 
 const canvas = document.getElementById("warpCanvas");
 const ctx = canvas.getContext("2d");
@@ -25,6 +26,32 @@ let minPreviewRadius, maxPreviewRadius;
 
 let isSelectingEllipse = false;
 let manualEllipsePoints = [];
+
+export function returnBrushToDefault() {
+    if (window._noCorners)
+        return;
+
+    brushSlider.value = 5;
+    brushValueDisplay.textContent = brushSlider.value;
+    previewRadius = Number(brushSlider.value);
+    points = [];
+    redoStack = [];
+    ellipseControlDiv.style.display = "flex";
+}
+
+export function setBrushIfNoCorners() {
+    if (!window._noCorners)
+        return;
+
+    brushSlider.value = 30;
+    brushValueDisplay.textContent = brushSlider.value;
+    previewRadius = Number(brushSlider.value);
+    points = [];
+    redoStack = [];
+    ellipseControlDiv.style.display = "none";
+}
+
+const ellipseControlDiv = document.getElementById("ellipseControl");
 
 const hideEllipseBtn = document.getElementById("hideEllipseBtn");
 hideEllipseBtn.addEventListener("click", () => {
@@ -123,6 +150,9 @@ document.addEventListener("DOMContentLoaded", () => {
     minPreviewRadius = Number(brushSlider.min);
     maxPreviewRadius = Number(brushSlider.max);
 
+    if (!window._noCorners)
+        brushSlider.value = 30;
+
     brushValueDisplay.textContent = brushSlider.value;
     previewRadius = Number(brushSlider.value);
 
@@ -138,6 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function updatePointsUI() {
+    if(window._noCorners)
+        return;
+
     currentPointsContainer.innerHTML = "";
 
     const countElem = document.createElement("div");
@@ -153,12 +186,13 @@ function updatePointsUI() {
     points.forEach((point, i) => {
         const ellipse = window._currentEllipse;
         if (!ellipse) {
-            console.warn("Elipsa ešte nebola detegovaná");
+            // console.warn("Elipsa ešte nebola detegovaná");
+            showMessage('alert', "No ellipse detected!");
             return;
         }
 
         const score = getScore(point, ellipse, previewRadius, shotInDecimal);
-        console.log("Score:", score);
+        // console.log("Score:", score);
 
         const item = document.createElement("div");
         item.classList.add("point-item");
@@ -290,7 +324,7 @@ canvas.addEventListener("click", (e) => {
 
     points.push({ x: mouseX, y: mouseY, r: previewRadius });
     redoStack = [];
-    console.log(`Clicked at: x=${mouseX.toFixed(0)}, y=${mouseY.toFixed(0)}, r=${previewRadius}`);
+    // console.log(`Clicked at: x=${mouseX.toFixed(0)}, y=${mouseY.toFixed(0)}, r=${previewRadius}`);
     drawAll();
     updatePointsUI();
 });
@@ -410,7 +444,7 @@ window.addEventListener("keydown", (e) => {
 
 export function completeManualSelection(originalImage) {
     if (points.length !== 4) {
-        alert("Please select exactly 4 corners.");
+        showMessage('alert', "Please select 4 corners");
         return;
     }
 
@@ -424,5 +458,7 @@ export function completeManualSelection(originalImage) {
     document.getElementById("completeSelectionBtn")?.remove();
 
     saveImageToCanvas(warpCanvas);
-    console.log("✅ Manual selection complete.");
+    // console.log("✅ Manual selection complete.");
+    showMessage('success', "Manual selection completed");
+    window._noCorners = false;
 }

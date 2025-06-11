@@ -25,6 +25,9 @@ export function orderPoints(points) {
  * @returns {Array<number>} An array of dimensions of quadrilateral
  */
 export function calculateWidthHeight(corners) {
+    if (corners.length < 1)
+        return 0;
+    
     corners = corners.map(point => [...point]);
     
     let width1 = Math.hypot(corners[0][0] - corners[1][0], corners[0][1] - corners[1][1]);

@@ -14,7 +14,7 @@ export function findContours(image) {
     
     cv.findContours(image, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
     
-    console.log(hierarchy);
+    // console.log(hierarchy);
 
     hierarchy.delete();
     return contours;
@@ -113,7 +113,7 @@ export function detectCornersInMask(image) {
     let largestContour = getLargestContour(contours);
 
     let corners = approximateContourToPolygon(largestContour, image);
-    console.log("Corners", corners);
+    // console.log("Corners", corners);
     // cv.imshow("targetRoiCanvas", image);
 
     return [corners, image];
@@ -196,13 +196,13 @@ export function approximateContourToPolygon(largestContour, image) {
 
 export function findPaperCorners(originalImage, mask) {
     let contours = findContours(mask);
-    console.log("Countours", contours.size());
+    // console.log("Countours", contours.size());
 
     if (contours.size() == 0)
         console.error("Target not detected!");
 
     let largestContour = getLargestContour(contours);
-    console.log("Largest contour", largestContour);
+    // console.log("Largest contour", largestContour);
 
     // TODO: NEW IMAGE NEEDS TO BE CREATED
     /*if (DEV_MODE)
@@ -244,8 +244,8 @@ export function warpPerspective(image, corners) {
     let width = dimentions[0];
     let height = dimentions[1];
 
-    console.log("w", width);
-    console.log("h", height);
+    // console.log("w", width);
+    // console.log("h", height);
 
     let srcPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [].concat(...Orderedcorners));
     let destPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [0, 0, 0, height, width, 0, width, height]);

@@ -4,6 +4,7 @@ $includeScripts = [
     ['src' => './scripts/script.js',           'module' => true],
     ['src' => './scripts/handlers/selectionHandler.js', 'module' => true],
     ['src' => './scripts/design/navbar.js',  'module' => false],
+    ['src' => './scripts/utils/infoMessages.js',  'module' => true],
 ];
 require __DIR__ . '/layouts/header.php';
 require __DIR__ . '/layouts/navigation.php';
@@ -11,6 +12,13 @@ require __DIR__ . '/layouts/navigation.php';
 
 <h2>Evaluate Your Shooting Accuracy</h2>
 <p id="status">Loading OpenCV.js...</p>
+
+<div class="info-message success" id="globalMessage">
+    <div class="message">Placeholder text, testing messages…</div>
+    <button id="closeMessage">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
 
 <div class="upload-box" id="uploadBox">
     <div class="upload-text" id="uploadPlaceholder">
@@ -79,7 +87,7 @@ require __DIR__ . '/layouts/navigation.php';
                 </button>
             </div>
 
-            <div class="ellipse-control">
+            <div class="ellipse-control" id="ellipseControl">
                 <button id="redoEllipseBtn">
                     <i class="fa-regular fa-circle"></i> New Ellipse
                 </button>
@@ -87,7 +95,7 @@ require __DIR__ . '/layouts/navigation.php';
                     <i class="fa-solid fa-eye"></i>
                 </button>
             </div>
-            
+
             <button id="doneSelectionBtn" style="display: none;">Done</button>
         </div>
     </div>

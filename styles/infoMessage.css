@@ -1,0 +1,79 @@
+:root {
+    --color-success: #3aa52e;
+    --color-alert:  #a82323;
+    --color-danger: #a39a28;
+    --color-info:   #236e98;
+    --color-text-white: #fbfbfb;
+}
+
+.info-message {
+    position: relative;
+    display: flex;
+    font-size: 1rem;
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: .5rem;
+    padding: 1rem 2rem;
+    border-radius: .5rem;
+    color: var(--color-text-white);
+    justify-content: space-between;
+    align-items: center; 
+    visibility: hidden;
+    transition: visibility 0s linear .3s;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10000;
+}
+
+.info-message[style*="visibility: visible"] {
+    opacity: 1;
+    transition-delay: 0s;
+}
+
+.info-message.success {
+    color: var(--color-success);
+    background-color: rgba(94, 255, 76, .4);
+}
+.info-message.alert {
+    color: var(--color-alert);
+    background-color: rgba(255,  76, 76, .4);
+}
+.info-message.danger {
+    color: var(--color-danger);
+    background-color: rgba(255, 243, 76, .4);
+}
+.info-message.info {
+    color: var(--color-info);
+    background-color: rgba( 76, 189,255, .4);
+}
+
+.info-message .message i{
+    flex: 1;
+}
+
+.info-message button#closeMessage {
+    background: none;
+    padding: .25rem;
+    cursor: pointer;
+    transition: opacity .2s ease;
+    color: inherit;
+    border: none;
+    opacity: 1;
+}
+
+.info-message button#closeMessage:hover {
+    opacity: .7;
+}
+
+.info-message.success button#closeMessage {
+    color: var(--color-success);
+}
+.info-message.alert button#closeMessage {
+    color: var(--color-alert);
+}
+.info-message.danger button#closeMessage {
+    color: var(--color-danger);
+}
+.info-message.info button#closeMessage {
+    color: var(--color-info);
+}

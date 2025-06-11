@@ -1,7 +1,8 @@
 import { HIGHER_THRESHOLD_VALUE, LOWER_THRESHOLD_VALUE, MANUAL_CORNER_SELECTION } from "./_constants.js";
 /*import { convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";*/
 import { findPaperCorners, warpPerspective } from "./utils/imageProcessing.js";
-import { completeManualSelection } from "./handlers/selectionHandler.js";
+import { showMessage } from "./utils/infoMessages.js";
+import { completeManualSelection, returnBrushToDefault, setBrushIfNoCorners } from "./handlers/selectionHandler.js";
 import { points } from './handlers/selectionHandler.js';
 import { computeContentCentroid, detectRingsByEllipseFit } from "./utils/targetDetection.js";
 import { applyBinaryThreshold, applyDefaultBlur, applyGaussianBlur, applyMedianBlur, convertToGrayScale, convertToHSV, createMask } from "./utils/imageEffects.js";
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function onOpenCvReady() {
-    console.log("✅ OpenCV.js is fully loaded and initialized!");
+    console.log("OpenCV.js is fully loaded and initialized!");
     document.getElementById("status").textContent = "OpenCV.js is ready!";
 }
 
@@ -37,7 +38,7 @@ let uploadDisabled = false;
 
 function onFileUpload(event) {
     if (!cv || !cv.imread) {
-        console.error("❌ OpenCV is not fully loaded yet.");
+        showMessage('alert', "OpenCV is not completely loaded yet, please wait!");
         return;
     }
 
@@ -46,7 +47,7 @@ function onFileUpload(event) {
 
     const file = event.target.files[0];
     if (!file) {
-        console.error("❌ No file selected");
+        showMessage('alert', "No file selected!");
         document.getElementById("loadingSpinner").style.display = "none";
         document.getElementById("uploadPlaceholder").style.display = "flex";
         return;
@@ -62,7 +63,7 @@ function onFileUpload(event) {
 
     imgElement.onload = function () {
     let image = cv.imread(imgElement);
-    console.log("Image Matrix:", image);
+    // console.log("Image Matrix:", image);
 
     let grayImage = convertToGrayScale(image);
     let hsvImage = convertToHSV(image);
@@ -93,14 +94,29 @@ function onFileUpload(event) {
             axisRatioTolerance: 0.5,
             maxEllipseCount:    10
         });
-        console.log("Detected ellipse:", ellipse[0]);
-        
-        const ex = ellipse[0].center.x;
-        const ey = ellipse[0].center.y;
+        //console.log("Detected ellipse:", ellipse[0]);
 
-        const ax = ellipse[0].size.width  / 2;
-        const ay = ellipse[0].size.height / 2;
-        const angle = ellipse[0].angle;
+        let smallestEllipse = ellipse[0];
+
+        if (!smallestEllipse) {
+            smallestEllipse = {
+                center: { 
+                    x: centroid.x, 
+                    y: centroid.y 
+                },
+                size: { 
+                    width: 40,
+                    height: 40 
+                },
+                angle: 0
+            };
+        }
+
+        const ex = smallestEllipse.center.x;
+        const ey = smallestEllipse.center.y;
+        const ax = smallestEllipse.size.width  / 2;
+        const ay = smallestEllipse.size.height / 2;
+        const angle = smallestEllipse.angle;
 
         let overlay = warpSrc.clone();
         cv.ellipse( overlay, new cv.Point(ex, ey), new cv.Size(ax, ay), angle, 0, 360, new cv.Scalar(255, 76, 76, 255), 2, cv.LINE_AA);
@@ -110,7 +126,7 @@ function onFileUpload(event) {
 
         overlay.delete();
 
-        window._currentEllipse = ellipse[0];
+        window._currentEllipse = smallestEllipse;
 
         let hsvImageNew = convertToHSV(warpSrc);
 
@@ -122,11 +138,15 @@ function onFileUpload(event) {
         warpSrc.delete();
 
         uploadDisabled = true;
-        console.log("✅ Upload done, rings detected, click disabled.");
+        showMessage('success', "Image was sucessfully uploaded");
+        window._noCorners = false;
+        returnBrushToDefault();
     };
 
     if (corners == null || MANUAL_CORNER_SELECTION) {
-        console.log("❌ Automatic detection failed. Switching to manual corner selection...");
+        showMessage('danger', "Automatic detection failed. Select 4 corners of the target please");
+        window._noCorners = true;
+        setBrushIfNoCorners();
 
         document.getElementById("loadingSpinner").style.display = "none";
         document.getElementById("contentArea").style.display = "flex";
@@ -166,7 +186,7 @@ function onFileUpload(event) {
     grayImage.delete();
     hsvImage.delete();
     maskImage.delete();
-    console.log("Finished cleanup");
+    // console.log("Finished cleanup");
 
     const uploadBox = document.getElementById("uploadBox");
     uploadBox.style.outlineStyle = "solid";
@@ -193,12 +213,11 @@ export function saveImageToCanvasNoEllipse(canvas) {
 
 function checkOpenCv() {
     if (typeof cv !== "undefined" && cv.onRuntimeInitialized) {
-        console.log("✅ OpenCV.js script found!");
+        console.log("OpenCV.js script found!");
         cv.onRuntimeInitialized = onOpenCvReady;
     } else {
-        console.log("❌ OpenCV.js is not loaded.");
-        document.getElementById("status").textContent =
-        "Failed to load OpenCV.js!";
+        console.log("OpenCV.js is not loaded.");
+        document.getElementById("status").textContent = "Failed to load OpenCV.js!";
     }
 }
 
@@ -226,7 +245,8 @@ export function resetApp() {
     delete window._backgroundImage;
     delete window._currentEllipse;
     delete window._backgroundImageNoEllipse;
-    delete window._ellipseVisible;
+    window._ellipseVisible = false;
+    window._noCorners = false;
 
     uploadDisabled = false;
 }
