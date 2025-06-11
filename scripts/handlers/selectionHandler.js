@@ -557,7 +557,7 @@ export function completeManualSelection(originalImage) {
     document.getElementById("completeSelectionBtn")?.remove();
 
     saveImageToCanvas(warpCanvas);
-    // console.log("✅ Manual selection complete.");
+    // console.log("Manual selection complete.");
     showMessage('success', "Manual selection completed");
     window._noCorners = false;
 }
