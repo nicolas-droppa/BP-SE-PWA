@@ -14,6 +14,10 @@ if ($uri == '' || $uri == '/myAimBuddy') {
     require __DIR__ . '/app/Views/home.php';
 } elseif ($uri == '/myAimBuddy/about') {
     require __DIR__ . '/app/Views/about.php';
+} elseif ($uri == '/myAimBuddy/register') {
+    require __DIR__ . '/app/Views/register.php';
+} elseif ($uri == '/myAimBuddy/login') {
+    require __DIR__ . '/app/Views/login.php';
 } elseif ($uri == '/shots/create' && $method == 'POST') {
     // Handle AJAX or form POST to save a new shot
     $controller = new ShotController();
