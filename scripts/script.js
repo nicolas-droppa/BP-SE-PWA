@@ -81,8 +81,9 @@ function onFileUpload(event) {
     const continueWithWarpedImage = (warpSrc) => {
         //console.log(cv.getBuildInformation());
         const centroid = computeContentCentroid(warpSrc);
-        //console.log("cc: ", centroid);
-        //cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
+        window._centroid = centroid;
+        // console.log("cc: ", centroid);
+        cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
 
         cv.imshow("warpCanvas", warpSrc);
         saveImageToCanvasNoEllipse(warpCanvas);
@@ -248,6 +249,7 @@ export function resetApp() {
     window._ellipseVisible = false;
     window._noCorners = false;
     window._pxPerMm = 0;
+    window._centroid = 0;
 
     uploadDisabled = false;
 }

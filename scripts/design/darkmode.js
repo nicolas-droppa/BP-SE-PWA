@@ -1,4 +1,4 @@
-const buttonDay = document.getElementById('dayNightButton');
+const button = document.getElementById('dayNightButton');
 
 function applyDarkMode() {
     const darkMode = localStorage.getItem('dark-mode');
