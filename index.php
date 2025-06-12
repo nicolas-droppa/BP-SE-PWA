@@ -1,8 +1,8 @@
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/config.php';
-require __DIR__ . '/session.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/session.php';
 
 use App\Controllers\ShotController;
 
@@ -23,6 +23,9 @@ if ($uri == '' || $uri == '/myAimBuddy') {
     require __DIR__ . '/logout.php';
 } elseif ($uri == '/myAimBuddy/dashboard') {
     require __DIR__ . '/app/Views/dashboard.php';
-} else {
+} elseif ($uri == '/myAimBuddy/shots/create' && $method == 'POST') {
+    require __DIR__ . '/shots/create.php';
+    exit;
+}else {
     require __DIR__ . '/app/Views/404.php';
 }

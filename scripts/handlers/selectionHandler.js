@@ -3,7 +3,7 @@ import { saveImageToCanvas } from "../script.js";
 import { resetApp } from "../script.js";
 import { getScore } from './scoringSystem.js';
 import { showMessage } from "../utils/infoMessages.js";
-import { buildStatCubes } from "../utils/buildStatCubes.js";
+import { buildStatCubes, getLastStats } from "../utils/buildStatCubes.js";
 
 const canvas = document.getElementById("warpCanvas");
 const ctx = canvas.getContext("2d");
@@ -270,6 +270,51 @@ document.addEventListener("DOMContentLoaded", () => {
     changeEllipseVisibility();
 
     setActive(wholeBtn);
+
+    const saveBtn = document.getElementById("saveBtn");
+
+    if (saveBtn) {
+        saveBtn.disabled = true;
+
+        saveBtn.addEventListener("click", async () => {
+            const stats = getLastStats();
+            if (!stats) {
+                showMessage("alert", "Please evaluate at least one shot before saving.");
+                return;
+            }
+
+            const form = new FormData();
+            form.append("total_shots", stats.total);
+            form.append("best_score", stats.best.toFixed(1));
+            form.append("worst_score", stats.worst.toFixed(1));
+            form.append("average_score", stats.avgScore.toFixed(2));
+            form.append("mean_radius_mm", stats.meanRad.toFixed(2));
+            form.append("variance_mm2", stats.variance.toFixed(2));
+            form.append("consistency_mm", stats.mad.toFixed(2));
+            form.append("elevation_mm", stats.meanElev.toFixed(2));
+            form.append("windage_mm", stats.meanWind.toFixed(2));
+            form.append("max_spread_mm", stats.maxSpread.toFixed(2));
+
+            try {
+                const resp = await fetch('/myAimBuddy/shots/create', {
+                    method: 'POST',
+                    body: form,
+                    credentials: 'same-origin'
+                });
+                const json = await resp.json();
+
+                if (resp.ok && json.success) {
+                    showMessage("success", json.message || "Stats saved!");
+                    saveBtn.disabled = true;
+                } else {
+                    showMessage("alert", json.errors?.general || "Failed to save stats");
+                }
+            } catch (err) {
+                console.error(err);
+                showMessage("alert", "Error, could not save stats");
+            }
+        });
+    }
 });
 
 function updatePointsUI() {
@@ -286,10 +331,15 @@ function updatePointsUI() {
     if (!isSelectingEllipse)
         updateStats();
 
-    if (points.length == 0)
+    if (points.length == 0) {
         countElem.classList.add("hidden");
-    else
+        if (saveBtn) 
+            saveBtn.disabled = true;
+    } else {
         countElem.classList.remove("hidden");
+        if (saveBtn) 
+            saveBtn.disabled = false;
+    }
 
     points.forEach((point, i) => {
         const ellipse = window._currentEllipse;

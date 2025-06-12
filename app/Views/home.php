@@ -38,7 +38,7 @@ require __DIR__ . '/layouts/navigation.php';
                 <button id="resetBtn">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
-                <button id="saveBtn">
+                <button id="saveBtn" disabled>
                     <i class="fa-regular fa-floppy-disk"></i>
                 </button>
             </div>

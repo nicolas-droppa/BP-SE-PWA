@@ -1,4 +1,12 @@
+let lastStats = null;
+
+export function getLastStats() { 
+    return lastStats; 
+}
+
 export function buildStatCubes(div, total, best, worst, avgScore, meanRad, variance, mad, meanElev, meanWind, maxSpread) {
+    lastStats = { total, best, worst, avgScore, meanRad, variance, mad, meanElev, meanWind, maxSpread };
+
     div.innerHTML=`
         <h3>EVALUATION OF YOUR STATS</h3>
         <div class="stats-grid">
@@ -54,4 +62,8 @@ export function buildStatCubes(div, total, best, worst, avgScore, meanRad, varia
             </div>
         </div>
     `
+
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) 
+        saveBtn.disabled = false;
 }
