@@ -16,31 +16,28 @@ unset($_SESSION['flash']);
 $errors = $flash['errors'] ?? [];
 $oldValues = $flash['oldValues'] ?? [];
 
-$errors = [];
-$oldValues = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $oldValues['name'] = trim($_POST['name'] ?? '');
     $oldValues['email'] = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
-    if ($oldValues['name'] === '') {
-        $errors['name'] = 'Please enter your name.';
+    if ($oldValues['name'] == '') {
+        $errors['name'] = 'Please enter your name';
     }
 
-    if ($oldValues['email'] === '' || ! filter_var($oldValues['email'], FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = 'Please enter a valid email address.';
+    if ($oldValues['email'] == '' || ! filter_var($oldValues['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Please enter a valid email address';
     }
 
-    if ($password === '') {
-        $errors['password'] = 'Please choose a password.';
+    if ($password == '') {
+        $errors['password'] = 'Please choose a password';
     } elseif (strlen($password) < 6) {
-        $errors['password'] = 'Password must be at least 6 characters.';
+        $errors['password'] = 'Password must be at least 6 characters';
     }
 
-    if ($confirmPassword !== $password) {
-        $errors['confirm_password'] = 'Passwords do not match.';
+    if ($confirmPassword != $password) {
+        $errors['confirm_password'] = 'Passwords do not match';
     }
 
     if (empty($errors)) {
@@ -52,12 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
                 $query = $db->prepare(
-                    'INSERT INTO users (name, email, password) VALUES (:name, :email, :pasword)'
+                    'INSERT INTO users (name, email, password) VALUES (:name, :email, :password)'
                 );
                 $query->execute([
                     'name' => $oldValues['name'],
                     'email' => $oldValues['email'],
-                    'pasword' => $hash,
+                    'password' => $hash,
                 ]);
 
                 $_SESSION['user_id'] = $db->lastInsertId();
@@ -67,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
         } catch (PDOException $e) {
-            $errors['general'] = 'A database error occurred. Please try again later.';
+            $errors['general'] = 'A db error has occurred';
         }
     }
 
@@ -125,6 +122,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="/myAimBuddy/login">Log in here</a>.
     </p>
 </div>
+
+<?php if (!empty($errors['email'])): ?>
+    <script type="module">
+        import { showMessage } from '/myAimBuddy/scripts/utils/infoMessages.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            showMessage('alert', <?= json_encode($errors['email']) ?>);
+        });
+    </script>
+<?php endif; ?>
 
 <?php
 require __DIR__ . '/layouts/footer.php';
