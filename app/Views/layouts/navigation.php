@@ -13,7 +13,7 @@ $userName = $_SESSION['user_name'] ?? null;
         <li><a href="/myAimBuddy/register">Register</a></li>
         <?php else: ?>
         <li class="dropdown">
-            <a href="#" class="dropbtn"><?= htmlspecialchars($userName) ?></a>
+            <a href="/myAimBuddy/dashboard" class="dropbtn"><?= htmlspecialchars($userName) ?></a>
             <ul class="dropdown-content">
                 <li><a href="/myAimBuddy/dashboard">Dashboard</a></li>
                 <li><a href="/myAimBuddy/logout">Logout</a></li>

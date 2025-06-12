@@ -41,8 +41,61 @@
 }
 
 .dashboard-page .title {
-    font-size: 2.5rem;
-    color: var(--color-accent);
+    font-size: 2.3rem;
+    color: var(--color-text);
     margin-bottom: 2rem;
+    text-align: center;
+}
+
+.dashboard-page .title span{
+    color: var(--color-accent);
+}
+
+.table-container {
+    margin-top: 2rem;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.sessions-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sessions-table th,
+.sessions-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.sessions-table th {
+    color: var(--color-text);
+    background-color: var(--color-box);
+    font-weight: 600;
+}
+
+.sessions-table tr:nth-child(even) {
+    background-color: var(--color-background-highlight);
+}
+
+.sessions-table tr:hover {
+    background-color: var(--color-box-hover);
+}
+
+.sessions-table .actions .danger{
+    color: var(--color-alert);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sessions-table .actions .danger:hover{
+    color: var(--color-change-red-hover);
+}
+
+.no-sessions {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    color: var(--color-text);
     text-align: center;
 }
