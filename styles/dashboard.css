@@ -1,0 +1,48 @@
+:root {
+    --color-background: #f9f9fb;
+    --color-main: #fbfbfb;
+
+    --color-box: #e8e8e8;
+    --color-box-hover: #dedede;
+
+    --color-text: #1e1e2f;
+    --color-text-white: #fbfbfb;
+
+    --color-shadow: #bababa;
+    --color-border: #c0c0c0;
+    --color-border-dark: #888888;
+
+    --color-background-highlight: rgba(224, 224, 224, .3);
+
+    --color-accent: #00bfa6;
+    --color-accent-hover: #009c87;
+    
+    --color-success: #5eff4c;
+    --color-alert: #ff4c4c;
+    --color-danger: #fff34c;
+    --color-info: #4cbdff;
+
+    --color-change-red: #ff4c4c;
+    --color-change-green: #4cff6a;
+    --color-change-purple: #ba4cff;
+    --color-change-red-hover: #c03737;
+    --color-change-green-hover: #37bf4d;
+    --color-change-purple-hover: #8236b2;
+}
+
+.dashboard-page {
+    max-width: 80vw;
+    margin: 4rem auto;
+    padding: 2rem;
+    background-color: var(--color-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dashboard-page .title {
+    font-size: 2.5rem;
+    color: var(--color-accent);
+    margin-bottom: 2rem;
+    text-align: center;
+}

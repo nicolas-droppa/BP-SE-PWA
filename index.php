@@ -22,15 +22,7 @@ if ($uri == '' || $uri == '/myAimBuddy') {
 } elseif ($uri == '/myAimBuddy/logout') {
     require __DIR__ . '/logout.php';
 } elseif ($uri == '/myAimBuddy/dashboard') {
-    require __DIR__ . '/dashboard.php';
-} elseif ($uri == '/shots/create' && $method == 'POST') {
-    // Handle AJAX or form POST to save a new shot
-    $controller = new ShotController();
-    $controller->create();
-} elseif ($uri == '/shots/list' && $method == 'GET') {
-    // Return a list of shots JSON / XML
-    $controller = new ShotController();
-    $controller->listAll();
+    require __DIR__ . '/app/Views/dashboard.php';
 } else {
     require __DIR__ . '/app/Views/404.php';
 }

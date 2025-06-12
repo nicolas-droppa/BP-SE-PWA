@@ -1,6 +1,11 @@
 <link rel="stylesheet" href="styles/register.css"/>
 
 <?php
+if (!empty($_SESSION['user_id'])) {
+    header('Location: /myAimBuddy/dashboard');
+    exit;
+}
+
 $pageTitle = 'MyAimBuddy | Login';
 $includeScripts = [
     ['src' => './scripts/validators/validateLogin.js', 'module' => false],

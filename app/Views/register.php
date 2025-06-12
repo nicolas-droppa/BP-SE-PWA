@@ -1,6 +1,11 @@
 <link rel="stylesheet" href="styles/register.css"/>
 
 <?php
+if (!empty($_SESSION['user_id'])) {
+    header('Location: /myAimBuddy/dashboard');
+    exit;
+}
+
 $pageTitle = 'MyAimBuddy | Register';
 $includeScripts = [
     ['src' => './scripts/validators/validateRegister.js', 'module' => false],
@@ -126,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <?php if (!empty($errors['email'])): ?>
     <script type="module">
         import { showMessage } from '/myAimBuddy/scripts/utils/infoMessages.js';
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             showMessage('alert', <?= json_encode($errors['email']) ?>);
         });
