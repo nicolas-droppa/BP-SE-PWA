@@ -8,11 +8,13 @@
     --color-text: #1e1e2f;
     --color-text-white: #fbfbfb;
 
+    --color-text-span: #bababa;
+
     --color-shadow: #bababa;
     --color-border: #c0c0c0;
     --color-border-dark: #888888;
 
-    --color-background-highlight: rgba(224, 224, 224, .3);
+    --color-background-highlight: rgba(224, 224, 224, .3);  
 
     --color-accent: #00bfa6;
     --color-accent-hover: #009c87;
@@ -30,6 +32,39 @@
     --color-change-purple-hover: #8236b2;
 }
 
+.dark-mode {
+    --color-background: rgb(36, 36, 40);
+    --color-main: #242427;
+
+    --color-text-span: #9e9d9d;
+
+    --color-box: #2f2f32;
+    --color-box-hover: #2b2b2d;
+
+    --color-text: #e8e8e8;
+
+    --color-shadow: #1d1919;
+    --color-border: rgb(64, 64, 64);
+    --color-border-dark:#514e4e;
+
+    --color-background-highlight: rgb(53, 51, 51);
+
+    --color-accent: #00e0c0;
+    --color-accent-hover: #00bfa6;
+
+    --color-success: #3cff70;
+    --color-alert: #ff6666;
+    --color-danger: #fff266;
+    --color-info: #6ecbff;
+
+    --color-change-red: #ff6666;
+    --color-change-red-hover: #c94c4c;
+    --color-change-green: #5eff80;
+    --color-change-green-hover: #3fcf50;
+    --color-change-purple: #c583ff;
+    --color-change-purple-hover: #915ccf;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -44,6 +79,7 @@ html, body {
 }
 
 html {
+    color: var(--color-text);
     font-size: 1rem;
 }
 
@@ -77,6 +113,7 @@ body {
     align-items: center;
     width: 98%;
     margin: 0 auto;
+    line-height: 2;
     padding: 1rem 2rem;
     background-color: var(--color-main);
     z-index: 10000;
@@ -159,6 +196,26 @@ body {
     display: block;
 }
 
+.theme-toggle {
+    cursor: pointer;
+    display: inline-block;
+    line-height: 1.5;
+    width: 8ch;
+    padding: .25em 0;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-box);
+    box-sizing: border-box;
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s;
+    user-select: none;
+}
+
+.theme-toggle:hover {
+    background-color: var(--color-box-hover);
+    border-color: var(--color-border-dark);
+}
+
 /* Main container */
 .container {
     max-width: 100%;
@@ -171,7 +228,7 @@ body {
 h2 {
     margin-bottom: 1rem;
     font-size: 2rem;
-    color: #1e1e2f;
+    color: var(--color-accent);
 }
 
 /* Upload */
@@ -193,7 +250,7 @@ h2 {
 }
 
 .upload-text span {
-    color: var(--color-shadow);
+    color: var(--color-text-span);
 }
 
 .loading-spinner {
@@ -204,6 +261,7 @@ h2 {
 }
 
 .loading-spinner h2 {
+    color: var(--color-text);
     font-size: 1.3rem;
     font-weight: 600;
 }
@@ -301,6 +359,7 @@ h2 {
 }
 
 .control-panel .title h2 {
+    color: var(--color-text);
     font-size: 1rem;
     font-weight: 400;
 }
@@ -526,6 +585,7 @@ button {
     padding: .5rem 1rem;
     border: none;
     background-color: var(--color-main);
+    color: var(--color-text);
     border-radius: .375rem;
     font-size: .8rem;
     cursor: pointer;
@@ -596,7 +656,7 @@ button:hover {
 
 .stat-desc {
     font-size: .6rem;
-    color: var(--color-border);
+    color: var(--color-text-span);
     text-align: left;
 }
 

@@ -3,6 +3,10 @@
 <?php
 http_response_code(404);
 $pageTitle = '404 | Page Not Found';
+$includeScripts = [
+    ['src' => './scripts/design/navbar.js',  'module' => false],
+    ['src' => './scripts/design/darkmode.js',  'module' => false],
+];
 require __DIR__ . '/layouts/header.php';
 require __DIR__ . '/layouts/navigation.php';
 ?>

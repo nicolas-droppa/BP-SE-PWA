@@ -4,6 +4,7 @@
 $pageTitle = 'MyAimBuddy | About';
 $includeScripts = [
     ['src' => './scripts/design/navbar.js',  'module' => false],
+    ['src' => './scripts/design/darkmode.js',  'module' => false],
 ];
 require __DIR__ . '/layouts/header.php';
 require __DIR__ . '/layouts/navigation.php';

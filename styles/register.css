@@ -62,6 +62,7 @@
     border-radius: .25rem;
     background-color: var(--color-box);
     transition: border-color .2s ease, background-color .2s ease;
+    color: var(--color-text);
 }
 
 .register-form input:focus {
@@ -74,7 +75,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-main);
+    color: var(--color-text-white);
     background-color: var(--color-accent);
     gap: .5rem;
     padding: .75rem 1.5rem;

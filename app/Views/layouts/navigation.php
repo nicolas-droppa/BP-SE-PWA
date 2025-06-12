@@ -21,7 +21,7 @@ $userName = $_SESSION['user_name'] ?? null;
         </li>
         <?php endif; ?>
 
-        <li><a href="#">Settings</a></li>
+        <li class="theme-toggle" id="dayNightButton">Day</li>
     </ul>
 </nav>
 <main class="container">
