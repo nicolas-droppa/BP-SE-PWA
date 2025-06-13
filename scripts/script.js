@@ -82,11 +82,11 @@ function onFileUpload(event) {
         //console.log(cv.getBuildInformation());
         const centroid = computeContentCentroid(warpSrc);
         window._centroid = centroid;
-        // console.log("cc: ", centroid);
-        cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
+        //console.log("cc: ", centroid);
+        //cv.circle( warpSrc, new cv.Point(centroid.x, centroid.y), 1, [255, 0, 0, 255], 2);
 
-        cv.imshow("warpCanvas", warpSrc);
-        saveImageToCanvasNoEllipse(warpCanvas);
+        // cv.imshow("warpCanvas", warpSrc);
+        // saveImageToCanvasNoEllipse(warpCanvas);
 
         const ellipse = detectRingsByEllipseFit(warpSrc, {
             threshold:          100,
@@ -96,6 +96,15 @@ function onFileUpload(event) {
             maxEllipseCount:    10
         });
         //console.log("Detected ellipse:", ellipse[0]);
+
+        if (ellipse[0]) {
+            window._centroid = [ellipse[0].center.x, ellipse[0].center.y];
+            console.log("cc: ", window._centroid);
+        } else {
+            window._centroid = [0, 0];
+        }
+        cv.imshow("warpCanvas", warpSrc);
+        saveImageToCanvasNoEllipse(warpCanvas);
 
         let smallestEllipse = ellipse[0];
 
